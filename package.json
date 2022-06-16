@@ -1,0 +1,38 @@
+{
+  "name": "social-games",
+  "version": "1.0.0",
+  "description": "social games",
+  "main": "server/src/app.js",
+  "engines": {
+    "node": "16.14.0"
+  },
+  "scripts": {
+    "build": "cd client && npm run build",
+    "build:dev": "cd client && npm run build:dev",
+    "lint": "cd client && npm run lint; cd ../server && npm run lint",
+    "lint:fix": "cd client && npm run lint:fix; cd ../server && npm run lint:fix",
+    "start": "cd server && npm start",
+    "start:dev": "nodemon --exec \"cd client && npm run build:dev && open-cli http://localhost:3000 && cd ../server && npm run start:dev\""
+  },
+  "workspaces": {
+    "packages": [
+      "client",
+      "server"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peterrhodesdev/social-games.git"
+  },
+  "keywords": [],
+  "author": "Peter Rhodes <peter@peterrhodes.dev> (https://peterrhodes.dev/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/peterrhodesdev/social-games/issues"
+  },
+  "homepage": "https://github.com/peterrhodesdev/social-games#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.16",
+    "open-cli": "^7.0.1"
+  }
+}
