@@ -13,7 +13,7 @@ const LINK_NOT_CURRENT_STYLE =
 function Header() {
   const [links, setLinks] = useState([
     { key: "home", text: "Home", to: "/", current: true },
-    { key: "other", text: "Other", to: "/other", current: false },
+    { key: "other", text: "Math Grid", to: "/game/math-grid", current: false },
   ]);
 
   function updateLinks(linkClickedKey) {

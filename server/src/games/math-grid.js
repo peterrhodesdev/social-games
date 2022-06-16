@@ -1,0 +1,17 @@
+const OPERATOR_ADDITION = "+";
+const OPERATOR_SUBTRACTION = "-";
+const OPERATOR_MULTIPLICATION = "*";
+const OPERATOR_DIVISION = "/";
+
+function generate() {
+  const game = {
+    answer: [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+    rowOperators: [[OPERATOR_SUBTRACTION, OPERATOR_MULTIPLICATION], [OPERATOR_MULTIPLICATION, OPERATOR_SUBTRACTION], [OPERATOR_ADDITION, OPERATOR_ADDITION]],
+    rowSolutions: [56, 19, 4],
+    colOperators: [[OPERATOR_MULTIPLICATION, OPERATOR_SUBTRACTION], [OPERATOR_ADDITION, OPERATOR_ADDITION], [OPERATOR_SUBTRACTION, OPERATOR_MULTIPLICATION]],
+    colSolutions: [29, 10, 42],
+  };
+  return game;
+}
+
+export { generate };

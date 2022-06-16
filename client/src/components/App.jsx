@@ -4,6 +4,7 @@ import { Footer } from "./partials/Footer";
 import { Header } from "./partials/Header";
 import { Home } from "./Home";
 import { NotFound } from "./NotFound";
+import { MathGrid } from "./games/MathGrid";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <div className="p-8 prose prose-lg prose-slate max-w-none">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/game/math-grid" element={<MathGrid />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
