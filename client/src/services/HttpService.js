@@ -1,3 +1,5 @@
+import { Logger } from "shared";
+
 function getMessageForStatusCode(code) {
   switch (code) {
     case 400:
@@ -29,14 +31,14 @@ async function performRequest(request) {
     const response = await fetch(request);
     return response;
   } catch (err) {
-    console.error(`There was a problem performing the request: ${err}`);
+    Logger.error(`There was a problem performing the request: ${err}`);
     throw new HttpError(400);
   }
 }
 
 function checkResponse(response) {
   if (!response.ok) {
-    console.error(
+    Logger.error(
       `Request not successful: status = ${response.status}, statusText = ${response.statusText}`
     );
     throw new HttpError(response.status);
@@ -48,7 +50,7 @@ async function parseResponse(response) {
     const parsedBody = await response.json();
     return parsedBody;
   } catch (err) {
-    console.error(
+    Logger.error(
       `Couldn't extract JSON body content from the response, error = ${err}`
     );
     throw new HttpError(null, "Unable to process the response from the server");
@@ -60,7 +62,7 @@ async function getOne(url, id) {
   const response = await performRequest(request);
   checkResponse(response);
   response.parsedBody = await parseResponse(response);
-  console.log(`Parsed response: ${JSON.stringify(response.parsedBody)}`);
+  Logger.debug(`Parsed response: ${JSON.stringify(response.parsedBody)}`);
   return response;
 }
 

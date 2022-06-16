@@ -22,7 +22,6 @@ function MathGrid() {
         setGame(response.parsedBody);
         setStatusMessage(null);
       } catch (err) {
-        console.error(err);
         setStatusMessage("Error");
       }
     };

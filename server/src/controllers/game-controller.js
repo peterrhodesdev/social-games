@@ -1,4 +1,5 @@
 import express from "express";
+import { Logger } from "shared";
 import { generate as generateMathGrid } from "../games/math-grid.js";
 
 const router = express.Router();
@@ -11,10 +12,10 @@ router.get("/:game", (req, res) => {
       game = generateMathGrid();
       break;
     default:
-      console.error(`Unknown game: ${req.params.game}`);
+      Logger.error(`Unknown game: ${req.params.game}`);
       return res.status(404).send("Not found.");
   }
-  console.log(`${req.params.game}: ${JSON.stringify(game)}`);
+  Logger.debug(`${req.params.game}: ${JSON.stringify(game)}`);
   return res.json(game);
 });
 

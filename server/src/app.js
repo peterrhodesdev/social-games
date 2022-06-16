@@ -1,6 +1,7 @@
 import express from "express";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import { Logger } from "shared";
 import { router as gameRouter } from "./controllers/game-controller.js";
 
 const __filename = fileURLToPath(import.meta.url); // eslint-disable-line no-underscore-dangle
@@ -13,7 +14,7 @@ app.use(express.static(path.resolve(__dirname, "../../client/build")));
 
 // Log every request
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.originalUrl}`);
+  Logger.debug(`${req.method} ${req.originalUrl}`);
   next();
 });
 
@@ -26,5 +27,5 @@ app.get("*", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`server listening on port ${PORT}`);
+  Logger.info(`server listening on port ${PORT}`);
 });
