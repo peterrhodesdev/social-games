@@ -12,7 +12,8 @@
     "lint": "cd client && npm run lint; cd ../server && npm run lint; cd ../shared && npm run lint",
     "lint:fix": "cd client && npm run lint:fix; cd ../server && npm run lint:fix; cd ../shared && npm run lint:fix",
     "start": "cd server && npm start",
-    "start:dev": "nodemon --exec \"cd client && npm run build:dev && open-cli http://localhost:3000 && cd ../server && npm run start:dev\""
+    "start:dev": "nodemon --exec \"cd client && npm run build:dev && open-cli http://localhost:3000 && cd ../server && npm run start:dev\"",
+    "test": "cd server && npm run test"
   },
   "workspaces": {
     "packages": [

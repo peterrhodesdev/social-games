@@ -5,10 +5,11 @@
   "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "lint": "./node_modules/.bin/eslint ./src/**/*.js",
-    "lint:fix": "./node_modules/.bin/eslint ./src/**/*.js --fix",
+    "lint": "./node_modules/.bin/eslint ./src/**/*.js ./test/**/*.js",
+    "lint:fix": "./node_modules/.bin/eslint ./src/**/*.js ./test/**/*.js --fix",
     "start": "NODE_ENV=production node src/app.js",
-    "start:dev": "NODE_ENV=development DISABLE_ESLINT_PLUGIN=true dotenv -e .env.development node src/app.js"
+    "start:dev": "NODE_ENV=development DISABLE_ESLINT_PLUGIN=true dotenv -e .env.development node src/app.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest ./test"
   },
   "keywords": [],
   "author": "Peter Rhodes <peter@peterrhodes.dev> (https://peterrhodes.dev/)",
@@ -18,7 +19,9 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jest": "^26.5.3",
     "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^28.1.1",
     "prettier": "^2.7.0"
   },
   "dependencies": {

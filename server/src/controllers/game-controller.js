@@ -15,7 +15,7 @@ router.get("/:game", (req, res) => {
       Logger.error(`Unknown game: ${req.params.game}`);
       return res.status(404).send("Not found.");
   }
-  Logger.debug(`${req.params.game}: ${JSON.stringify(game)}`);
+  Logger.debug(req.params.game, game);
   return res.json(game);
 });
 
