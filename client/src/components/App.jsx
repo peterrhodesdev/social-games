@@ -4,7 +4,7 @@ import { Footer } from "./partials/Footer";
 import { Header } from "./partials/Header";
 import { Home } from "./Home";
 import { NotFound } from "./NotFound";
-import { MathGrid } from "./games/MathGrid";
+import { MathGrid } from "./games/math-grid/MathGrid";
 
 function App() {
   return (
