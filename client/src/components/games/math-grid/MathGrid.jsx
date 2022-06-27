@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Logger } from "shared";
-import { getOne } from "../../../services/HttpService";
 import { GameArea } from "./GameArea";
 import { GameControls } from "./GameControls";
 
-function MathGrid() {
-  const [game, setGame] = useState(null);
-  const [statusMessage, setStatusMessage] = useState(null);
+function MathGrid({ gameData }) {
   const [isNotesMode, setIsNotesMode] = useState(false);
   const [activeAnswerSquare, setActiveAnswerSquare] = useState({
     row: 0,
@@ -17,24 +14,6 @@ function MathGrid() {
       [0, 1, 2].map((col) => ({ row, col, value: null, notesValues: [] }))
     )
   );
-
-  useEffect(() => {
-    const getNewGame = async () => {
-      setStatusMessage("Loading");
-      try {
-        const response = await getOne(
-          `${process.env.REACT_APP_SERVER_BASE_URL}/api/game`,
-          "math-grid"
-        );
-        setGame(response.parsedBody);
-        setStatusMessage(null);
-      } catch (err) {
-        setStatusMessage("Error");
-      }
-    };
-
-    getNewGame();
-  }, []);
 
   const handleGameAreaAnswerSquareClick = (row, col) => {
     Logger.debug(`answer square clicked: row = ${row}, col = ${col}`);
@@ -83,34 +62,25 @@ function MathGrid() {
     return activeAnswerSquareState.notesValues;
   }
 
-  // flex justify-center select-none
-  // w-4/5 min-w-[280px] max-w-2xl
-
   return (
-    <>
-      <h1>Math Grid</h1>
-      {statusMessage && <p>{statusMessage}</p>}
-      {game && (
-        <div className="flex justify-center select-none">
-          <div className="math-grid-container">
-            <div className="pb-4">
-              <GameArea
-                game={game}
-                answerSquareClickHandler={handleGameAreaAnswerSquareClick}
-                activeAnswerSquare={activeAnswerSquare}
-                gameState={gameState}
-              />
-            </div>
-            <GameControls
-              activeValues={getActiveGameControlValues()}
-              numberClickHandler={handleGameControlNumberClick}
-              notesClickHandler={handleGameControlNotesClick}
-              isNotesMode={isNotesMode}
-            />
-          </div>
+    <div className="flex justify-center select-none">
+      <div className="math-grid-container">
+        <div className="pb-4">
+          <GameArea
+            game={gameData}
+            answerSquareClickHandler={handleGameAreaAnswerSquareClick}
+            activeAnswerSquare={activeAnswerSquare}
+            gameState={gameState}
+          />
         </div>
-      )}
-    </>
+        <GameControls
+          activeValues={getActiveGameControlValues()}
+          numberClickHandler={handleGameControlNumberClick}
+          notesClickHandler={handleGameControlNotesClick}
+          isNotesMode={isNotesMode}
+        />
+      </div>
+    </div>
   );
 }
 

@@ -2,9 +2,9 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Footer } from "./partials/Footer";
 import { Header } from "./partials/Header";
-import { Home } from "./Home";
+import { Lobby } from "./Lobby";
 import { NotFound } from "./NotFound";
-import { MathGrid } from "./games/math-grid/MathGrid";
+import { GameRoom } from "./games/GameRoom";
 
 function App() {
   return (
@@ -13,8 +13,8 @@ function App() {
         <Header />
         <div className="p-8 prose prose-lg prose-slate max-w-none">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/game/math-grid" element={<MathGrid />} />
+            <Route path="/" element={<Lobby />} />
+            <Route path="/game/:game" element={<GameRoom />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
