@@ -20,7 +20,7 @@ function generateGameData(gameName) {
 function createNewGame(creator, gameName) {
   const id = uuidv4();
   const gameData = generateGameData(gameName);
-  const game = { id, creator, gameName, gameData };
+  const game = { gameId: id, creator, gameName, gameData };
   games.push(game);
   return game;
 }
@@ -30,12 +30,12 @@ function getGameList() {
   return games.map(({ gameData, ...otherAttrs }) => otherAttrs);
 }
 
-function getGame(id) {
-  return games.find((game) => game.id === id);
+function getGame(gameId) {
+  return games.find((game) => game.gameId === gameId);
 }
 
-function removeGameFromList(id) {
-  games = games.filter((game) => game.id !== id);
+function removeGameFromList(gameId) {
+  games = games.filter((game) => game.gameId !== gameId);
 }
 
 export { createNewGame, getGame, getGameList, removeGameFromList };

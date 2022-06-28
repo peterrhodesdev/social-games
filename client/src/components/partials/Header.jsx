@@ -1,26 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { Disclosure } from "@headlessui/react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
 
-const TITLE = "Social Games";
-const TITLE_STYLE = "text-gray-100 font-bold";
+// Style colors defined here so can be easily updated
+const TITLE_STYLE = "text-gray-100";
 const DISCLOSURE_STYLE = "bg-gray-500";
-const LINK_CURRENT_STYLE = "bg-gray-900 text-white";
-const LINK_NOT_CURRENT_STYLE =
-  "text-gray-300 hover:bg-gray-700 hover:text-white";
+const LINK_STYLE = "text-gray-300 hover:bg-gray-700 hover:text-white";
+
+const links = [
+  { key: "lobby", text: "Lobby", to: "/" },
+  { key: "math-grid", text: "Math Grid", to: "/game/math-grid" },
+];
 
 function Header() {
-  const [links, setLinks] = useState([
-    { key: "lobby", text: "Lobby", to: "/", current: true },
-  ]);
-
-  function updateLinks(linkClickedKey) {
-    setLinks(
-      links.map((link) => ({ ...link, current: link.key === linkClickedKey }))
-    );
-  }
-
   return (
     <Disclosure as="nav" className={DISCLOSURE_STYLE}>
       {({ open }) => (
@@ -29,7 +22,9 @@ function Header() {
             <div className="relative flex items-center justify-between h-16">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button */}
-                <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                <Disclosure.Button
+                  className={`${LINK_STYLE} inline-flex items-center justify-center p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white`}
+                >
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XIcon className="block h-6 w-6" aria-hidden="true" />
@@ -40,7 +35,9 @@ function Header() {
               </div>
               <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex items-center">
-                  <span className={TITLE_STYLE}>{TITLE}</span>
+                  <span className={`${TITLE_STYLE} font-bold`}>
+                    Social Games
+                  </span>
                 </div>
                 <div className="hidden sm:block sm:ml-6">
                   <div className="flex space-x-4">
@@ -48,13 +45,7 @@ function Header() {
                       <Link
                         key={link.key}
                         to={link.to}
-                        className={`${
-                          link.current
-                            ? LINK_CURRENT_STYLE
-                            : LINK_NOT_CURRENT_STYLE
-                        } px-3 py-2 rounded-md text-sm font-medium`}
-                        aria-current={link.current ? "page" : undefined}
-                        onClick={() => updateLinks(link.key)}
+                        className={`${LINK_STYLE} px-3 py-2 rounded-md text-sm font-medium`}
                       >
                         {link.text}
                       </Link>
@@ -72,11 +63,7 @@ function Header() {
                   key={link.key}
                   as={Link}
                   to={link.to}
-                  className={`${
-                    link.current ? LINK_CURRENT_STYLE : LINK_NOT_CURRENT_STYLE
-                  } block px-3 py-2 rounded-md text-base font-medium`}
-                  aria-current={link.current ? "page" : undefined}
-                  onClick={() => updateLinks(link.key)}
+                  className={`${LINK_STYLE} block px-3 py-2 rounded-md text-base font-medium`}
                 >
                   {link.text}
                 </Disclosure.Button>

@@ -28,11 +28,11 @@ function socketNamespace(io) {
     });
 
     // Join an existing game
-    socket.on("join", (id) => {
-      Logger.info(`request to join game ${id}`);
-      const game = getGame(id);
+    socket.on("join", (gameId) => {
+      Logger.info(`request to join game ${gameId}`);
+      const game = getGame(gameId);
       if (game) {
-        removeGameFromList(id);
+        removeGameFromList(gameId);
         socket.emit("join-success", game);
         io.emit("game-list", getGameList());
       } else {

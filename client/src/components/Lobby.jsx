@@ -13,7 +13,7 @@ const columns = [
 function Lobby() {
   const navigate = useNavigate();
 
-  const [socketConnection, setSocketConnection] = useState(null);
+  const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [games, setGames] = useState([]);
 
@@ -23,8 +23,13 @@ function Lobby() {
 
   useEffect(() => {
     setIsLoading(true);
-    const socket = getSocket(`lobby`);
-    setSocketConnection(socket);
+    setSocket(getSocket(`lobby`));
+  }, []);
+
+  useEffect(() => {
+    if (!socket) {
+      return;
+    }
 
     socket.on("game-list", (gameList) => {
       setIsLoading(false);
@@ -48,20 +53,20 @@ function Lobby() {
     });
 
     socket.emit("game-list");
-  }, []);
+  }, [socket]);
 
   function createGameClicked() {
-    socketConnection.emit("create", "math-grid");
+    socket.emit("create", "math-grid");
   }
 
-  function joinGame(id) {
-    socketConnection.emit("join", id);
+  function joinGame(gameId) {
+    socket.emit("join", gameId);
   }
 
   return (
     <>
       <h1>Lobby</h1>
-      {socketConnection && socketConnection.id ? (
+      {socket && socket.id ? (
         <button type="button" onClick={() => createGameClicked()}>
           Create Game
         </button>
@@ -86,7 +91,7 @@ function Lobby() {
             </tr>
           ) : (
             games.map((game) => (
-              <tr key={game.id} onClick={() => joinGame(game.id)}>
+              <tr key={game.gameId} onClick={() => joinGame(game.gameId)}>
                 <td>{game.creator}</td>
                 <td>{game.gameName}</td>
                 <td>

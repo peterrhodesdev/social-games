@@ -3,7 +3,7 @@ import { Logger } from "shared";
 import { GameArea } from "./GameArea";
 import { GameControls } from "./GameControls";
 
-function MathGrid({ gameData }) {
+function MathGrid({ gameData, socket, gameId }) {
   const [isNotesMode, setIsNotesMode] = useState(false);
   const [activeAnswerSquare, setActiveAnswerSquare] = useState({
     row: 0,
@@ -14,6 +14,14 @@ function MathGrid({ gameData }) {
       [0, 1, 2].map((col) => ({ row, col, value: null, notesValues: [] }))
     )
   );
+
+  // Multiplayer
+  if (socket) {
+    socket.on("game-state", (multiplayerGameState) => {
+      Logger.info("game state changed");
+      setGameState(multiplayerGameState);
+    });
+  }
 
   const handleGameAreaAnswerSquareClick = (row, col) => {
     Logger.debug(`answer square clicked: row = ${row}, col = ${col}`);
@@ -43,6 +51,11 @@ function MathGrid({ gameData }) {
       return element;
     });
     setGameState(newGameState);
+
+    // Multiplayer
+    if (socket) {
+      socket.emit("game-state", gameId, newGameState);
+    }
   };
 
   const handleGameControlNotesClick = () => {
