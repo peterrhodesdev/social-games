@@ -1,41 +1,75 @@
 import { Logger } from "shared";
 import { v4 as uuidv4 } from "uuid";
-import { generate as generateMathGrid } from "../games/math-grid.js";
+import {
+  generate as generateMathGrid,
+  checkAnswer as checkAnswerMathGrid,
+} from "../games/math-grid.js";
 
-let games = [];
+const games = [];
+
+const GameStatus = Object.freeze({
+  OPEN: Symbol("open"),
+  CLOSED: Symbol("closed"),
+});
+
+function closeGame(gameId) {
+  games.map((game) =>
+    game.gameId === gameId ? { ...game, status: GameStatus.CLOSED } : game
+  );
+}
 
 function generateGameData(gameName) {
-  let gameData;
   switch (gameName) {
     case "math-grid":
-      gameData = generateMathGrid();
-      break;
+      return generateMathGrid();
     default:
       Logger.error(`Unknown game name: ${gameName}`);
       throw new Error(`Unknown game name: ${gameName}`);
   }
-  return gameData;
 }
 
 function createNewGame(creator, gameName) {
-  const id = uuidv4();
-  const gameData = generateGameData(gameName);
-  const game = { gameId: id, creator, gameName, gameData };
+  const gameId = uuidv4();
+  const { answer, ...gameData } = generateGameData(gameName);
+  const game = {
+    gameId,
+    creator,
+    gameName,
+    gameData,
+    answer,
+    status: GameStatus.OPEN,
+  };
   games.push(game);
   return game;
 }
 
-function getGameList() {
-  // Delete the gameData attribute from each element
-  return games.map(({ gameData, ...otherAttrs }) => otherAttrs);
+function getOpenGameList() {
+  return games
+    .filter((game) => game.status === GameStatus.OPEN)
+    .map((game) => ({
+      gameId: game.gameId,
+      creator: game.creator,
+      gameName: game.gameName,
+    }));
 }
 
-function getGame(gameId) {
-  return games.find((game) => game.gameId === gameId);
+function getGame(gameId, includeAnswer = false) {
+  const game = games.find((g) => g.gameId === gameId);
+  if (game && !includeAnswer) {
+    const { answer, ...otherAttrs } = game;
+    return otherAttrs;
+  }
+  return game;
 }
 
-function removeGameFromList(gameId) {
-  games = games.filter((game) => game.gameId !== gameId);
+function checkGameAnswer(gameId, answer) {
+  const game = getGame(gameId, true);
+  if (!game) {
+    Logger.error(`couldn't find game ${gameId}`);
+    throw new Error(`couldn't find game ${gameId}`);
+  }
+  // TODO select function based on game name
+  return checkAnswerMathGrid(game.answer, answer);
 }
 
-export { createNewGame, getGame, getGameList, removeGameFromList };
+export { checkGameAnswer, closeGame, createNewGame, getGame, getOpenGameList };

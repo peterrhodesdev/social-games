@@ -120,4 +120,15 @@ function generate() {
   };
 }
 
-export { generate };
+function checkAnswer(expected, actual) {
+  for (let i = 0; i < actual.length; i += 1) {
+    for (let j = 0; j < actual[i].length; j += 1) {
+      if (expected[i][j] !== actual[i][j]) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+export { generate, checkAnswer };

@@ -1,10 +1,10 @@
 import React from "react";
 
-function BlankSquare({ isOnEdge }) {
+function BlankSquare({ isOnEdge, backgroundColor }) {
   return (
     <div
       className={`aspect-square w-full ${
-        isOnEdge ? "bg-white" : "bg-black"
+        isOnEdge ? backgroundColor : "bg-black"
       } flex items-center justify-center`}
     />
   );

@@ -1,4 +1,5 @@
 import { Logger } from "shared";
+import { checkGameAnswer, getGame } from "../services/game-service.js";
 
 function socketNamespace(io) {
   io.on("connection", (socket) => {
@@ -19,6 +20,8 @@ function socketNamespace(io) {
       Logger.info(`joining room ${gameId}`);
       socket.join(gameId);
       socket.broadcast.to(gameId).emit("partner-join", socket.id);
+      const game = getGame(gameId);
+      io.in(gameId).emit("game-data", game.gameData);
     });
 
     // Creator requested to start the game
@@ -31,6 +34,12 @@ function socketNamespace(io) {
     socket.on("game-state", (gameId, gameState) => {
       Logger.info(`game ${gameId} state changed by ${socket.id}`);
       socket.broadcast.to(gameId).emit("game-state", gameState);
+    });
+
+    // Players submit answer for checking
+    socket.on("check-answer", (gameId, answer) => {
+      Logger.info(`checking answer for game ${gameId}`, answer);
+      io.in(gameId).emit("answer-checked", checkGameAnswer(gameId, answer));
     });
   });
 }

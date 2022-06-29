@@ -3,10 +3,19 @@ import { Logger } from "shared";
 import { getSocket } from "../../services/SocketService";
 import { MathGrid } from "./math-grid/MathGrid";
 
-function MultiPlayer({ gameId, gameName, isCreator, gameData }) {
+const GameStage = Object.freeze({
+  WAITING_FOR_PARTNER: Symbol("waitingForPartner"),
+  GENERATING_GAME: Symbol("generatingGame"),
+  READY: Symbol("ready"),
+  STARTED: Symbol("started"),
+});
+
+function MultiPlayer({ gameId, gameName, isCreator }) {
   const [socket, setSocket] = useState(null);
-  const [isWaitingForPartner, setIsWaitingForPartner] = useState(isCreator);
-  const [gameStarted, setGameStarted] = useState(false);
+  const [gameStage, setGameStage] = useState(
+    isCreator ? GameStage.WAITING_FOR_PARTNER : GameStage.GENERATING_GAME
+  );
+  const [gameData, setGameData] = useState(null);
 
   useEffect(() => {
     setSocket(getSocket(`game/${gameName}`));
@@ -20,13 +29,20 @@ function MultiPlayer({ gameId, gameName, isCreator, gameData }) {
     // Another user has joined the game
     socket.on("partner-join", (partnerId) => {
       Logger.info(`partner ${partnerId} joined`);
-      setIsWaitingForPartner(false);
+      setGameStage(GameStage.GENERATING_GAME);
+    });
+
+    // Received game data from the server
+    socket.on("game-data", (gd) => {
+      Logger.info("game data received from server", gd);
+      setGameData(gd);
+      setGameStage(GameStage.READY);
     });
 
     // Server indicating to all players that the game has started
     socket.on("start", () => {
       Logger.info("game started");
-      setGameStarted(true);
+      setGameStage(GameStage.STARTED);
     });
 
     if (!isCreator) {
@@ -40,22 +56,24 @@ function MultiPlayer({ gameId, gameName, isCreator, gameData }) {
     socket.emit("start", gameId);
   }
 
-  let content;
-  if (isWaitingForPartner) {
-    content = <p>Waiting for partner...</p>;
-  } else if (!gameStarted) {
-    content = isCreator ? (
-      <button type="button" onClick={() => startGame()}>
-        Start
-      </button>
-    ) : (
-      <p>Waiting for creator to start game</p>
-    );
-  } else {
-    content = <MathGrid gameData={gameData} socket={socket} gameId={gameId} />;
+  switch (gameStage) {
+    case GameStage.WAITING_FOR_PARTNER:
+      return <p>Waiting for partner...</p>;
+    case GameStage.GENERATING_GAME:
+      return <p>All players joined, generating game...</p>;
+    case GameStage.READY:
+      return isCreator ? (
+        <button type="button" onClick={() => startGame()}>
+          Start
+        </button>
+      ) : (
+        <p>Game generated, waiting for creator to start game...</p>
+      );
+    case GameStage.STARTED:
+      return <MathGrid gameData={gameData} socket={socket} gameId={gameId} />;
+    default:
+      throw new Error(`Unknown game stage: ${gameStage}`);
   }
-
-  return content;
 }
 
 export { MultiPlayer };

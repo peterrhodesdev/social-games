@@ -3,6 +3,7 @@ import { AnswerSquare } from "./AnswerSquare";
 import { BlankSquare } from "./BlankSquare";
 import { OperatorSquare } from "./OperatorSquare";
 import { SolutionSquare } from "./SolutionSquare";
+import { GameStage } from "./GameStage";
 
 const SquareTypes = Object.freeze({
   ANSWER: Symbol("answer"),
@@ -15,6 +16,7 @@ function GameArea({
   answerSquareClickHandler,
   activeAnswerSquare,
   gameState,
+  gameStage,
 }) {
   function getAnswerSquares() {
     const answerSquares = [];
@@ -125,6 +127,18 @@ function GameArea({
     );
   }
 
+  let blankSquareBackgroundColor;
+  switch (gameStage) {
+    case GameStage.ANSWER_CORRECT:
+      blankSquareBackgroundColor = "bg-green-500";
+      break;
+    case GameStage.ANSWER_INCORRECT:
+      blankSquareBackgroundColor = "bg-red-500";
+      break;
+    default:
+      blankSquareBackgroundColor = "bg-white";
+  }
+
   const grid = [];
   const squares = getSquares();
   for (let i = 0; i < 7; i += 1) {
@@ -147,7 +161,12 @@ function GameArea({
             throw new Error(`Unknown square type: ${square.type}`);
         }
       } else {
-        gridElement = <BlankSquare isOnEdge={i === 6 || j === 6} />;
+        gridElement = (
+          <BlankSquare
+            isOnEdge={i === 6 || j === 6}
+            backgroundColor={blankSquareBackgroundColor}
+          />
+        );
       }
       grid[i].push(gridElement);
     }

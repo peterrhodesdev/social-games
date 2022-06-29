@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Logger } from "shared";
 import { Spinner } from "./partials/Spinner";
@@ -16,9 +16,12 @@ function Lobby() {
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [games, setGames] = useState([]);
+  const gameNameRef = useRef(null);
 
-  function navigateToGameRoom(game, isCreator) {
-    navigate(`/game/${game.gameName}`, { state: { isCreator, ...game } });
+  function navigateToGameRoom(gameId, isCreator) {
+    navigate(`/game/${gameNameRef.current}`, {
+      state: { gameId, gameName: gameNameRef.current, isCreator },
+    });
   }
 
   useEffect(() => {
@@ -37,14 +40,14 @@ function Lobby() {
       Logger.info("received game list", gameList);
     });
 
-    socket.on("game-created", (game) => {
-      Logger.info("game created", game);
-      navigateToGameRoom(game, true);
+    socket.on("game-created", (gameId) => {
+      Logger.info(`game created ${gameId}`);
+      navigateToGameRoom(gameId, true);
     });
 
-    socket.on("join-success", (game) => {
+    socket.on("join-success", (gameId) => {
       Logger.info(`successfully joined game`);
-      navigateToGameRoom(game, false);
+      navigateToGameRoom(gameId, false);
     });
 
     socket.on("join-fail", () => {
@@ -56,10 +59,13 @@ function Lobby() {
   }, [socket]);
 
   function createGameClicked() {
-    socket.emit("create", "math-grid");
+    const gameName = "math-grid";
+    gameNameRef.current = gameName;
+    socket.emit("create", gameName);
   }
 
-  function joinGame(gameId) {
+  function joinGame(gameId, gameName) {
+    gameNameRef.current = gameName;
     socket.emit("join", gameId);
   }
 
@@ -91,7 +97,10 @@ function Lobby() {
             </tr>
           ) : (
             games.map((game) => (
-              <tr key={game.gameId} onClick={() => joinGame(game.gameId)}>
+              <tr
+                key={game.gameId}
+                onClick={() => joinGame(game.gameId, game.gameName)}
+              >
                 <td>{game.creator}</td>
                 <td>{game.gameName}</td>
                 <td>
