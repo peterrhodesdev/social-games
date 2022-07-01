@@ -8,6 +8,7 @@ import {
   getPlayer,
   getPlayerPublicInfo,
   playerCreatedGame,
+  playerLeftGame,
   playerRequestedToJoinGame,
   PlayerStatus,
 } from "./player-service.js";
@@ -67,6 +68,12 @@ function getGame(gameId) {
   return game;
 }
 
+/**
+ * Gets a game's public info
+ * @param {string} gameId game ID
+ * @returns {Game} game public info
+ * @throws if the game is not found
+ */
 function getGamePublicInfo(gameId) {
   const game = getGame(gameId);
   return {
@@ -111,6 +118,14 @@ function deleteOpenGamesByPlayer(playerId) {
   return playerGame.id;
 }
 
+/**
+ * Performs checks to see if a room can be created then updates the game
+ * @param {string} gameId game ID
+ * @param {string} playerId player ID
+ * @throws if player is not the creator
+ * @throws if game status is invalid
+ * @throws if player status is invalid
+ */
 function createRoom(gameId, playerId) {
   const game = getGame(gameId);
   const player = getPlayer(playerId);
@@ -138,29 +153,46 @@ function createRoom(gameId, playerId) {
   });
 }
 
+/**
+ * Marks a player as requested to join a game
+ * @param {string} gameId game ID
+ * @param {string} playerId player ID
+ * @throws if player is already in a game
+ * @throws if player status is invalid
+ * @throws if game status is invalid
+ */
 function joinGameRequest(gameId, playerId) {
   const player = getPlayer(playerId);
 
   // check player not already in game
   if (player.currentGameId) {
     Logger.logAndThrowError(
-      `player ${playerId} is already in game ${player.currentGameId}`
+      `player ${playerId} is already in game ${player.currentGameId}`,
+      player
     );
   }
 
   // check player status is valid
   if (player.status !== PlayerStatus.CONNECTED) {
-    Logger.logAndThrowError(`invalid player status ${player.status}`);
+    Logger.logAndThrowError(`invalid player status ${player.status}`, player);
   }
 
   const game = getGame(gameId);
   if (game.status !== GameStatus.OPEN) {
-    Logger.logAndThrowError(`game ${gameId} isn't open: ${game.status}`);
+    Logger.logAndThrowError(`game ${gameId} isn't open: ${game.status}`, game);
   }
 
   playerRequestedToJoinGame(player.id, gameId);
 }
 
+/**
+ * Joins a player to a game room
+ * @param {string} gameId game ID
+ * @param {string} playerId player ID
+ * @throws if player status is invalid
+ * @throws if player is joined to another game
+ * @throws if game status is invalid
+ */
 function joinRoom(gameId, playerId) {
   const player = getPlayer(playerId);
 
@@ -182,6 +214,11 @@ function joinRoom(gameId, playerId) {
   updateGame(gameId, { playerIds: [...game.playerIds, playerId] });
 }
 
+/**
+ * Removes a player from the game they are involved with
+ * @param {string} gameSocketId socket ID player used for the game
+ * @returns game ID that player was involved with, null if none
+ */
 function deletePlayerFromGames(gameSocketId) {
   let playerId = null;
   const game = games.find((g) =>
@@ -196,15 +233,28 @@ function deletePlayerFromGames(gameSocketId) {
   );
 
   if (game && playerId) {
-    updateGame(game.id, {
-      playerIds: game.playerIds.filter((pId) => pId !== playerId),
-    });
+    if (
+      [GameStatus.CREATED, GameStatus.OPEN].includes(game.status) &&
+      game.creatorId === playerId
+    ) {
+      Logger.debug(`creator ${playerId} left game ${game.id}`);
+      updateGame(game.id, { status: GameStatus.DELETED });
+      game.playerIds.forEach((pId) => playerLeftGame(pId));
+    } else {
+      Logger.debug(`player ${playerId} left game ${game.id}`);
+      updateGame(game.id, {
+        playerIds: game.playerIds.filter((pId) => pId !== playerId),
+      });
+      playerLeftGame(playerId);
+    }
     return game.id;
   }
 
+  Logger.debug("player wasn't involved in any games");
   return null;
 }
 
+// private
 function generateGameDataAndAnswer(gameName) {
   switch (gameName) {
     case "math-grid":
@@ -214,6 +264,11 @@ function generateGameDataAndAnswer(gameName) {
   }
 }
 
+/**
+ * Generates the game data
+ * @param {string} gameId game ID
+ * @returns game data
+ */
 function generateGameData(gameId) {
   const game = getGame(gameId);
 
@@ -231,54 +286,17 @@ function generateGameData(gameId) {
   return gameData;
 }
 
-///////////////////////////
-
-
-
-
-
-// TODO getPlayer(gameId, playerId)
-
+/**
+ * Checks whether a game answer is correct
+ * @param {string} gameId game ID
+ * @param {any} answer the submitted answer
+ * @returns true if the answer is correct, false otherwise
+ */
 function checkGameAnswer(gameId, answer) {
   const game = getGame(gameId, true);
-  if (!game) {
-    Logger.error(`couldn't find game ${gameId}`);
-    throw new Error(`couldn't find game ${gameId}`);
-  }
   // TODO select function based on game name
   return checkAnswerMathGrid(game.answer, answer);
 }
-
-/* function checkPlayerNotInvolvedInAnyGames(playerId) {
-  const game = games.find((g) => g.players.map((p) => p.id).includes(playerId));
-  if (game) {
-    throw new Error(
-      `player ${playerId} is already part of game ${game.gameId}`
-    );
-  }
-}
-
-function updateGameStatus(gameId, newStatus) {
-  games = games.map((game) =>
-    game.gameId === gameId ? { ...game, status: newStatus } : game
-  );
-}
-
-function playerRequestedToJoin(gameId, playerId) {
-  checkPlayerNotInvolvedInAnyGames(playerId);
-
-  const game = getGame(gameId);
-
-  if (!game) {
-    throw new Error(`couldn't find game ${gameId}`);
-  }
-  if (game.status !== GameStatus.OPEN) {
-    throw new Error(`game ${gameId} isn't open: ${game.status}`);
-  }
-
-  //game.players.push(createPlayer(playerId, PlayerStatus.REQUESTED_TO_JOIN));
-} */
-
 
 export {
   createRoom,

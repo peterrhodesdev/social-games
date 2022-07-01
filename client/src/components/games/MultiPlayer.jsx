@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Logger } from "shared";
 import { getSocket } from "../../services/SocketService";
 import { CommunicationPanel } from "./CommunicationPanel";
@@ -16,100 +16,105 @@ const GameStage = Object.freeze({
 });
 
 function MultiPlayer({ gameId, gameName, isCreator, playerId }) {
-  const [socket, setSocket] = useState(null);
+  const socketRef = useRef(null);
   const [gameStage, setGameStage] = useState(GameStage.CONNECTING);
   const [gameData, setGameData] = useState(null);
   const [creator, setCreator] = useState(null);
   const [players, setPlayers] = useState([]);
 
-  function updatePlayerList(updatedCreator, updatedPlayers) {
-    setCreator(updatedCreator);
-    setPlayers(updatedPlayers);
-
-    switch (true) {
-      // creator left before game could start
-      case [GameStage.WAITING_FOR_PLAYERS, GameStage.READY_TO_START].includes(
-        gameStage
-      ) && !updatedPlayers.some((np) => np.id === updatedCreator.id):
-        setGameStage(GameStage.ABANDONED);
-        break;
-      // have enough players to start
-      case gameStage === GameStage.WAITING_FOR_PLAYERS &&
-        updatedPlayers.length > 1:
-        setGameStage(GameStage.READY_TO_START);
-        break;
-      // players left and don't have enough to start
-      case gameStage === GameStage.READY_TO_START && updatedPlayers.length <= 1:
-        setGameStage(GameStage.WAITING_FOR_PLAYERS);
-        break;
-      default:
-        Logger.debug("no change to game stage");
-    }
-  }
-
   useEffect(() => {
-    const gameSocket = getSocket(`game/${gameName}`, false);
-    setSocket(gameSocket);
+    socketRef.current = getSocket(`game/${gameName}`, false);
 
-    gameSocket.on("create-room-success", () => {
+    socketRef.current.on("create-room-success", () => {
       Logger.info("create room success");
       setGameStage(GameStage.WAITING_FOR_PLAYERS);
     });
 
-    gameSocket.on("create-room-fail", () => {
+    socketRef.current.on("create-room-fail", () => {
       Logger.warn("create room fail");
       setGameStage(GameStage.ERROR);
     });
 
-    gameSocket.on("join-room-success", () => {
+    socketRef.current.on("join-room-success", () => {
       Logger.info("join room success");
-      setGameStage(GameStage.WAITING_FOR_PLAYERS);
+      setGameStage(GameStage.READY_TO_START);
     });
 
-    gameSocket.on("join-room-fail", () => {
+    socketRef.current.on("join-room-fail", () => {
       Logger.warn("join room fail");
       setGameStage(GameStage.ERROR);
     });
 
     // Server indicating to all players that the game is about to start
-    gameSocket.on("generate-game-data-in-progress", () => {
+    socketRef.current.on("generate-game-data-in-progress", () => {
       Logger.info("game about to start");
       setGameStage(GameStage.GENERATING_GAME);
     });
 
     // Received game data from the server
-    gameSocket.on("generate-game-data-success", (gd) => {
+    socketRef.current.on("generate-game-data-success", (gd) => {
       Logger.info("game data received from server", gd);
       setGameData(gd);
       setGameStage(GameStage.IN_PROGRESS);
     });
 
-    gameSocket.on("generate-game-data-fail", () => {
+    socketRef.current.on("generate-game-data-fail", () => {
       Logger.warn("failed to generate game data");
       setGameStage(GameStage.ERROR);
     });
 
     if (isCreator) {
-      gameSocket.emit("create-room", gameId, playerId);
+      socketRef.current.emit("create-room", gameId, playerId);
     } else {
-      gameSocket.emit("join-room", gameId, playerId);
+      socketRef.current.emit("join-room", gameId, playerId);
     }
 
-    return () => gameSocket.disconnect();
+    return () => socketRef.current.disconnect();
   }, []);
 
   useEffect(() => {
-    if (socket) {
-      // Received list of players
-      socket.on("player-list", (updatedCreator, updatedPlayers) => {
-        Logger.info("player list received", updatedCreator, updatedPlayers);
-        updatePlayerList(updatedCreator, updatedPlayers);
-      });
-    }
+    const updatePlayerList = (updatedCreator, updatedPlayers) => {
+      Logger.info("player list received", updatedCreator, updatedPlayers);
+      setCreator(updatedCreator);
+      setPlayers(updatedPlayers);
+
+      // Shortcircuit game stage checks/changes if game already started
+      if (
+        ![GameStage.WAITING_FOR_PLAYERS, GameStage.READY_TO_START].includes(
+          gameStage
+        )
+      ) {
+        return;
+      }
+
+      switch (true) {
+        // creator left before game could start
+        case !updatedPlayers.some((np) => np.id === updatedCreator.id):
+          setGameStage(GameStage.ABANDONED);
+          break;
+        // have enough players to start
+        case gameStage === GameStage.WAITING_FOR_PLAYERS &&
+          updatedPlayers.length > 1:
+          setGameStage(GameStage.READY_TO_START);
+          break;
+        // players left and don't have enough to start
+        case gameStage === GameStage.READY_TO_START &&
+          updatedPlayers.length <= 1:
+          setGameStage(GameStage.WAITING_FOR_PLAYERS);
+          break;
+        default:
+          Logger.debug("no change to game stage");
+      }
+    };
+
+    // Received list of players
+    socketRef.current.on("player-list", updatePlayerList);
+
+    return () => socketRef.current.off("player-list", updatePlayerList);
   }, [gameStage]);
 
   function startGame() {
-    socket.emit("generate-game-data", gameId);
+    socketRef.current.emit("generate-game-data", gameId);
   }
 
   let gamePanel;
@@ -135,7 +140,11 @@ function MultiPlayer({ gameId, gameName, isCreator, playerId }) {
     case GameStage.IN_PROGRESS:
     case GameStage.COMPLETED:
       gamePanel = (
-        <MathGrid gameData={gameData} socket={socket} gameId={gameId} />
+        <MathGrid
+          gameData={gameData}
+          socket={socketRef.current}
+          gameId={gameId}
+        />
       );
       break;
     case GameStage.ABANDONED:

@@ -50,7 +50,7 @@ function getPlayers() {
 
 /**
  * Gets a player
- * @param {string} playerId ID of the player
+ * @param {string} playerId player ID
  * @returns {Player} player
  * @throws if the player is not found
  */
@@ -62,6 +62,12 @@ function getPlayer(playerId) {
   return player;
 }
 
+/**
+ * Gets a player's public info
+ * @param {string} playerId player ID
+ * @returns {Player} player public info
+ * @throws if the player is not found
+ */
 function getPlayerPublicInfo(playerId) {
   const player = getPlayer(playerId);
   return {
@@ -91,6 +97,11 @@ function deletePlayer(playerId) {
   });
 }
 
+/**
+ * Updates a player because they created a game
+ * @param {string} playerId player ID
+ * @param {string} gameId game ID
+ */
 function playerCreatedGame(playerId, gameId) {
   updatePlayer(playerId, {
     status: PlayerStatus.CREATED_GAME,
@@ -98,6 +109,11 @@ function playerCreatedGame(playerId, gameId) {
   });
 }
 
+/**
+ * Updates player because they requested to join a game
+ * @param {string} playerId player ID
+ * @param {string} gameId player ID
+ */
 function playerRequestedToJoinGame(playerId, gameId) {
   updatePlayer(playerId, {
     status: PlayerStatus.REQUESTED_TO_JOIN,
@@ -105,11 +121,29 @@ function playerRequestedToJoinGame(playerId, gameId) {
   });
 }
 
+/**
+ * Updates player because they joined a game room
+ * @param {string} playerId player ID
+ * @param {string} gameId game ID
+ * @param {string} socketId socket ID used by the player for the game room
+ */
 function playerJoinedGameRoom(playerId, gameId, socketId) {
   updatePlayer(playerId, {
     status: PlayerStatus.JOINED,
     gameSocketId: socketId,
-    joinedGameId: gameId,
+    currentGameId: gameId,
+  });
+}
+
+/**
+ * Updates player because they left a game
+ * @param {string} playerId player ID
+ */
+function playerLeftGame(playerId) {
+  updatePlayer(playerId, {
+    status: PlayerStatus.CONNECTED,
+    gameSocketId: null,
+    currentGameId: null,
   });
 }
 
@@ -121,6 +155,7 @@ export {
   getPlayers,
   playerCreatedGame,
   playerJoinedGameRoom,
+  playerLeftGame,
   playerRequestedToJoinGame,
   PlayerStatus,
 };

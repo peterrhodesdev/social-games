@@ -13,7 +13,7 @@ const columns = [
 function Lobby() {
   const navigate = useNavigate();
 
-  const [socket, setSocket] = useState(null);
+  const socketRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [games, setGames] = useState([]);
   const [playerName, setPlayerName] = useState(null);
@@ -34,61 +34,60 @@ function Lobby() {
 
   useEffect(() => {
     setIsLoading(true);
-    const lobbySocket = getSocket("lobby", true);
-    setSocket(lobbySocket);
+    socketRef.current = getSocket("lobby", true);
 
-    lobbySocket.on("my-player", (myPlayer) => {
+    socketRef.current.on("my-player", (myPlayer) => {
       playerIdRef.current = myPlayer.id;
       setPlayerName(myPlayer.name);
       Logger.info("received my player", myPlayer);
     });
 
-    lobbySocket.on("game-list", (gameList) => {
+    socketRef.current.on("game-list", (gameList) => {
       setIsLoading(false);
       setGames(gameList);
       Logger.info("received game list", gameList);
     });
 
-    lobbySocket.on("create-game-success", (gameId) => {
+    socketRef.current.on("create-game-success", (gameId) => {
       Logger.info(`game created ${gameId}`);
       navigateToGameRoom(gameId, true);
     });
 
-    lobbySocket.on("create-game-fail", () => {
+    socketRef.current.on("create-game-fail", () => {
       Logger.error("failed to create game");
     });
 
-    lobbySocket.on("join-game-request-success", () => {
+    socketRef.current.on("join-game-request-success", () => {
       Logger.info("request to join game success");
       navigateToGameRoom(joinGameIdRef.current, false);
     });
 
-    lobbySocket.on("join-game-request-fail", () => {
+    socketRef.current.on("join-game-request-fail", () => {
       Logger.warn(`request to join game fail`);
       joinGameIdRef.current = null;
       gameNameRef.current = null;
     });
 
-    lobbySocket.emit("get-my-player");
-    lobbySocket.emit("get-game-list");
+    socketRef.current.emit("get-my-player");
+    socketRef.current.emit("get-game-list");
   }, []);
 
   function createGameClicked() {
     const gameName = "math-grid";
     gameNameRef.current = gameName;
-    socket.emit("create-game", gameName);
+    socketRef.current.emit("create-game", gameName);
   }
 
   function joinGameRequest(gameId, gameName) {
     joinGameIdRef.current = gameId;
     gameNameRef.current = gameName;
-    socket.emit("join-game-request", gameId);
+    socketRef.current.emit("join-game-request", gameId);
   }
 
   return (
     <>
       <h1>Lobby</h1>
-      {socket ? (
+      {socketRef.current ? (
         <>
           <p>Connected as: {playerName ?? "connecting ..."}</p>
           <button type="button" onClick={() => createGameClicked()}>

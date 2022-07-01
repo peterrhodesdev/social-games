@@ -34,6 +34,7 @@ function socketNamespace(io) {
       Logger.info(`math-grid socket with id ${socket.id} disconnected`);
       const gameId = deletePlayerFromGames(socket.id);
       if (gameId) {
+        emitGameList();
         emitPlayerList(io, gameId);
       }
     });
