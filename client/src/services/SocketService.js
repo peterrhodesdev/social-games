@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 
 const socketConnections = [];
 
-function createSocket(namespace) {
+function createSocket(namespace, save) {
   Logger.info(`creating new socket for namespace ${namespace}`);
   const newSocket = io(`${process.env.REACT_APP_SERVER_BASE_URL}/${namespace}`);
 
@@ -13,12 +13,14 @@ function createSocket(namespace) {
     );
   });
 
-  socketConnections.push({ namespace, socket: newSocket });
+  if (save) {
+    socketConnections.push({ namespace, socket: newSocket });
+  }
 
   return newSocket;
 }
 
-function getSocket(namespace) {
+function getSocket(namespace, save = false) {
   const socketConnection = socketConnections.find(
     (s) => s.namespace === namespace
   );
@@ -28,7 +30,7 @@ function getSocket(namespace) {
     );
     return socketConnection.socket;
   }
-  return createSocket(namespace);
+  return createSocket(namespace, save);
 }
 
 export { getSocket };

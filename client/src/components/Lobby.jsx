@@ -16,70 +16,88 @@ function Lobby() {
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [games, setGames] = useState([]);
+  const [playerName, setPlayerName] = useState(null);
+  const playerIdRef = useRef(null);
+  const joinGameIdRef = useRef(null);
   const gameNameRef = useRef(null);
 
   function navigateToGameRoom(gameId, isCreator) {
     navigate(`/game/${gameNameRef.current}`, {
-      state: { gameId, gameName: gameNameRef.current, isCreator },
+      state: {
+        gameId,
+        gameName: gameNameRef.current,
+        isCreator,
+        playerId: playerIdRef.current,
+      },
     });
   }
 
   useEffect(() => {
     setIsLoading(true);
-    setSocket(getSocket(`lobby`));
-  }, []);
+    const lobbySocket = getSocket("lobby", true);
+    setSocket(lobbySocket);
 
-  useEffect(() => {
-    if (!socket) {
-      return;
-    }
+    lobbySocket.on("my-player", (myPlayer) => {
+      playerIdRef.current = myPlayer.id;
+      setPlayerName(myPlayer.name);
+      Logger.info("received my player", myPlayer);
+    });
 
-    socket.on("game-list", (gameList) => {
+    lobbySocket.on("game-list", (gameList) => {
       setIsLoading(false);
       setGames(gameList);
       Logger.info("received game list", gameList);
     });
 
-    socket.on("game-created", (gameId) => {
+    lobbySocket.on("create-game-success", (gameId) => {
       Logger.info(`game created ${gameId}`);
       navigateToGameRoom(gameId, true);
     });
 
-    socket.on("join-success", (gameId) => {
-      Logger.info(`successfully joined game`);
-      navigateToGameRoom(gameId, false);
+    lobbySocket.on("create-game-fail", () => {
+      Logger.error("failed to create game");
     });
 
-    socket.on("join-fail", () => {
-      Logger.info(`failed to join game`);
-      // TODO handle fail
+    lobbySocket.on("join-game-request-success", () => {
+      Logger.info("request to join game success");
+      navigateToGameRoom(joinGameIdRef.current, false);
     });
 
-    socket.emit("game-list");
-  }, [socket]);
+    lobbySocket.on("join-game-request-fail", () => {
+      Logger.warn(`request to join game fail`);
+      joinGameIdRef.current = null;
+      gameNameRef.current = null;
+    });
+
+    lobbySocket.emit("get-my-player");
+    lobbySocket.emit("get-game-list");
+  }, []);
 
   function createGameClicked() {
     const gameName = "math-grid";
     gameNameRef.current = gameName;
-    socket.emit("create", gameName);
+    socket.emit("create-game", gameName);
   }
 
-  function joinGame(gameId, gameName) {
+  function joinGameRequest(gameId, gameName) {
+    joinGameIdRef.current = gameId;
     gameNameRef.current = gameName;
-    socket.emit("join", gameId);
+    socket.emit("join-game-request", gameId);
   }
 
   return (
     <>
       <h1>Lobby</h1>
-      {socket && socket.id ? (
-        <button type="button" onClick={() => createGameClicked()}>
-          Create Game
-        </button>
+      {socket ? (
+        <>
+          <p>Connected as: {playerName ?? "connecting ..."}</p>
+          <button type="button" onClick={() => createGameClicked()}>
+            Create Game
+          </button>
+        </>
       ) : (
         <p>Waiting for connection...</p>
       )}
-
       <table>
         <thead>
           <tr>
@@ -98,11 +116,11 @@ function Lobby() {
           ) : (
             games.map((game) => (
               <tr
-                key={game.gameId}
-                onClick={() => joinGame(game.gameId, game.gameName)}
+                key={game.id}
+                onClick={() => joinGameRequest(game.id, game.name)}
               >
-                <td>{game.creator}</td>
-                <td>{game.gameName}</td>
+                <td>{game.creator.name}</td>
+                <td>{game.name}</td>
                 <td>
                   <button type="button">join</button>
                 </td>
