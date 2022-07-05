@@ -120,7 +120,9 @@ function GameArea({
         clickHandler={() => answerSquareClickHandler(row, col)}
         value={answerSquareState.value}
         isActive={
-          activeAnswerSquare.row === row && activeAnswerSquare.col === col
+          activeAnswerSquare &&
+          activeAnswerSquare.row === row &&
+          activeAnswerSquare.col === col
         }
         notesValues={answerSquareState.notesValues}
       />

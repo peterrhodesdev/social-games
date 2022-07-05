@@ -4,6 +4,7 @@ import {
   checkGameAnswer,
   createRoom,
   deletePlayerFromGames,
+  gameCompleted,
   generateGameData,
   getGamePublicInfo,
   joinRoom,
@@ -96,7 +97,11 @@ function socketNamespace(io) {
     // Players submit answer for checking
     socket.on("check-answer", (gameId, answer) => {
       Logger.info(`checking answer for game ${gameId}`, answer);
-      io.in(gameId).emit("answer-checked", checkGameAnswer(gameId, answer));
+      const isCorrect = checkGameAnswer(gameId, answer);
+      if (isCorrect) {
+        gameCompleted(gameId);
+      }
+      io.in(gameId).emit("answer-checked", isCorrect);
     });
   });
 }

@@ -158,9 +158,9 @@ function MultiPlayer({ gameId, gameName, isCreator, playerId }) {
   }
 
   return (
-    <div className="grid grid-cols-2">
-      <div>{gamePanel}</div>
-      <div>
+    <div className="flex flex-row">
+      <div className="w-1/2 min-w-[320px] mr-4">{gamePanel}</div>
+      <div className="w-1/2 min-w-[320px] ml-4">
         <CommunicationPanel
           creator={creator}
           players={players}

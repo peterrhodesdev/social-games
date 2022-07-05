@@ -19,6 +19,7 @@ const GameStatus = Object.freeze({
   CREATED: "CREATED",
   OPEN: "OPEN",
   IN_PROGRESS: "IN_PROGRESS",
+  COMPLETED: "COMPLETED",
   DELETED: "DELETED",
 });
 
@@ -277,6 +278,7 @@ function generateGameData(gameId) {
   }
 
   const { answer, ...gameData } = generateGameDataAndAnswer(game.name);
+  Logger.debug("generated game data:", gameData, "answer:", answer);
   updateGame(gameId, {
     ...game,
     status: GameStatus.IN_PROGRESS,
@@ -298,12 +300,26 @@ function checkGameAnswer(gameId, answer) {
   return checkAnswerMathGrid(game.answer, answer);
 }
 
+/**
+ * Marks a game as completed
+ * @param {string} gameId game ID
+ */
+function gameCompleted(gameId) {
+  Logger.debug(`game ${gameId} completed`);
+  const game = getGame(gameId);
+  updateGame(gameId, {
+    ...game,
+    status: GameStatus.COMPLETED,
+  });
+}
+
 export {
   createRoom,
   checkGameAnswer,
   createNewGame,
   deleteOpenGamesByPlayer,
   deletePlayerFromGames,
+  gameCompleted,
   generateGameData,
   getGame,
   getGamePublicInfo,
