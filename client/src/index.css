@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-.math-grid-container {
+.game-container {
   max-width: 1024px;
   min-width: 320px;
   width: calc(100vh * 0.5);
 }
 
-.math-grid-square svg {
+.game-square svg {
   position: relative;
   left: 0;
   top: 0;

@@ -217,34 +217,34 @@ function MathGrid({ gameData, socket, gameId }) {
   }
 
   return (
-    <div className="flex justify-center select-none" disabled={!isGameActive()}>
-      <div className="math-grid-container">
-        <div className="pb-4">
-          <GameArea
-            game={gameData}
-            answerSquareClickHandler={handleGameAreaAnswerSquareClick}
-            activeAnswerSquare={activeAnswerSquare}
-            gameState={gameState}
-            gameStage={gameStage}
-          />
-        </div>
+    <div disabled={!isGameActive()}>
+      <div className="mb-4">
+        <GameArea
+          game={gameData}
+          answerSquareClickHandler={handleGameAreaAnswerSquareClick}
+          activeAnswerSquare={activeAnswerSquare}
+          gameState={gameState}
+          gameStage={gameStage}
+        />
+      </div>
+      <div className="mb-4">
         <GameControls
           activeValues={getActiveGameControlValues()}
           numberClickHandler={handleGameControlNumberClick}
           notesClickHandler={handleGameControlNotesClick}
           isNotesMode={isNotesMode}
         />
-        <div>
-          <button
-            type="button"
-            onClick={() => onSubmitClick()}
-            disabled={!(canAnswerBeSubmitted() && isGameActive())}
-          >
-            Submit
-          </button>
-          {gameStage === GameStage.ANSWER_CORRECT && <p>Correct</p>}
-          {gameStage === GameStage.ANSWER_INCORRECT && <p>Incorrect</p>}
-        </div>
+      </div>
+      <div>
+        <button
+          type="button"
+          onClick={() => onSubmitClick()}
+          disabled={!(canAnswerBeSubmitted() && isGameActive())}
+        >
+          Submit
+        </button>
+        {gameStage === GameStage.ANSWER_CORRECT && <p>Correct</p>}
+        {gameStage === GameStage.ANSWER_INCORRECT && <p>Incorrect</p>}
       </div>
     </div>
   );

@@ -18,4 +18,8 @@ function shuffle(array) {
   return arrayCopy;
 }
 
-export { randomElement, randomInt, shuffle };
+function shuffleString(str) {
+  return shuffle(str).join("");
+}
+
+export { randomElement, randomInt, shuffle, shuffleString };

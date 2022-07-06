@@ -164,11 +164,17 @@ function Game() {
       break;
     case GameStage.IN_PROGRESS:
     case GameStage.COMPLETED:
-      gamePanel = gameDetails[gameName].component({
-        gameData,
-        socket: socketRef.current,
-        gameId,
-      });
+      gamePanel = (
+        <div className="flex justify-center select-none">
+          <div className="game-container">
+            {gameDetails[gameName].component({
+              gameData,
+              socket: socketRef.current,
+              gameId,
+            })}
+          </div>
+        </div>
+      );
       break;
     case GameStage.ABANDONED:
       gamePanel = <p>Game abandoned</p>;

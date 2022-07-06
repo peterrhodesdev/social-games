@@ -12,18 +12,7 @@ import {
 } from "./player-service.js";
 
 let games = [];
-const words = [
-  "aaabbbccc", // nine letter word
-  "abc", // matching words
-  "abcabcabc",
-  "aaa",
-  "bbb",
-  "ccc",
-  "aaaa", // non-matching
-  "abcd",
-  "aa",
-  "bc",
-];
+let words = [];
 
 const gameLogic = {
   "math-grid": { generate: generateMathGrid },
@@ -320,6 +309,10 @@ function gameCompleted(gameId) {
   });
 }
 
+function populateNineLetterWordsData(data) {
+  words = data;
+}
+
 export {
   createRoom,
   createNewGame,
@@ -333,5 +326,6 @@ export {
   getGames,
   joinGameRequest,
   joinRoom,
+  populateNineLetterWordsData,
   GameStatus,
 };
