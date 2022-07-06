@@ -8,10 +8,7 @@ const TITLE_STYLE = "text-gray-100";
 const DISCLOSURE_STYLE = "bg-gray-500";
 const LINK_STYLE = "text-gray-300 hover:bg-gray-700 hover:text-white";
 
-const links = [
-  { key: "lobby", text: "Lobby", to: "/" },
-  { key: "math-grid", text: "Math Grid", to: "/game/math-grid" },
-];
+const links = [{ key: "lobby", text: "Lobby", to: "/" }];
 
 function Header() {
   return (

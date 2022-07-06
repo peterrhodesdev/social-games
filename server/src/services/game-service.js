@@ -1,9 +1,7 @@
 import { Logger } from "shared";
 import { v4 as uuidv4 } from "uuid";
-import {
-  generate as generateMathGrid,
-  checkAnswer as checkAnswerMathGrid,
-} from "../games/math-grid.js";
+import { generate as generateMathGrid } from "../games/math-grid.js";
+import { generate as generateNineLetterWord } from "../games/nine-letter-word.js";
 import {
   getPlayer,
   getPlayerPublicInfo,
@@ -14,6 +12,23 @@ import {
 } from "./player-service.js";
 
 let games = [];
+const words = [
+  "aaabbbccc", // nine letter word
+  "abc", // matching words
+  "abcabcabc",
+  "aaa",
+  "bbb",
+  "ccc",
+  "aaaa", // non-matching
+  "abcd",
+  "aa",
+  "bc",
+];
+
+const gameLogic = {
+  "math-grid": { generate: generateMathGrid },
+  "nine-letter-word": { generate: () => generateNineLetterWord(words) },
+};
 
 const GameStatus = Object.freeze({
   CREATED: "CREATED",
@@ -28,10 +43,15 @@ const GameStatus = Object.freeze({
  * @param {string} playerId ID of the player creating the game
  * @param {string} gameName name of the game
  * @returns {Game} new game
+ * @throws if the game name is invalid
  * @throws if the player is not found
  * @throws if the player is involved in another game
  */
 function createNewGame(playerId, gameName) {
+  if (!Object.prototype.hasOwnProperty.call(gameLogic, gameName)) {
+    throw new Error(`invalid game name: ${gameName}`);
+  }
+
   const player = getPlayer(playerId);
   if (player.currentGameId) {
     Logger.logAndThrowError(
@@ -255,16 +275,6 @@ function deletePlayerFromGames(gameSocketId) {
   return null;
 }
 
-// private
-function generateGameDataAndAnswer(gameName) {
-  switch (gameName) {
-    case "math-grid":
-      return generateMathGrid();
-    default:
-      throw new Error(`Unknown game name: ${gameName}`);
-  }
-}
-
 /**
  * Generates the game data
  * @param {string} gameId game ID
@@ -277,7 +287,7 @@ function generateGameData(gameId) {
     Logger.logAndThrowError(`invalid game status: ${game.status}`);
   }
 
-  const { answer, ...gameData } = generateGameDataAndAnswer(game.name);
+  const { answer, ...gameData } = gameLogic[game.name].generate();
   Logger.debug("generated game data:", gameData, "answer:", answer);
   updateGame(gameId, {
     ...game,
@@ -289,15 +299,12 @@ function generateGameData(gameId) {
 }
 
 /**
- * Checks whether a game answer is correct
+ * Gets a game's answer
  * @param {string} gameId game ID
- * @param {any} answer the submitted answer
- * @returns true if the answer is correct, false otherwise
+ * @returns answer
  */
-function checkGameAnswer(gameId, answer) {
-  const game = getGame(gameId, true);
-  // TODO select function based on game name
-  return checkAnswerMathGrid(game.answer, answer);
+function getAnswer(gameId) {
+  return getGame(gameId).answer;
 }
 
 /**
@@ -315,12 +322,12 @@ function gameCompleted(gameId) {
 
 export {
   createRoom,
-  checkGameAnswer,
   createNewGame,
   deleteOpenGamesByPlayer,
   deletePlayerFromGames,
   gameCompleted,
   generateGameData,
+  getAnswer,
   getGame,
   getGamePublicInfo,
   getGames,

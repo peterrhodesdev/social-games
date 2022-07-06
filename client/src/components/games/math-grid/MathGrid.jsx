@@ -48,10 +48,7 @@ function MathGrid({ gameData, socket, gameId }) {
       setGameStage(GameStage.IN_PROGRESS);
     }
 
-    // Multiplayer
-    if (socket) {
-      socket.emit("game-state", gameId, newGameState);
-    }
+    socket.emit("game-state", gameId, newGameState);
   }
 
   // Key events
@@ -141,8 +138,7 @@ function MathGrid({ gameData, socket, gameId }) {
     );
   }
 
-  // Multiplayer
-  if (socket) {
+  useEffect(() => {
     socket.on("game-state", (multiplayerGameState) => {
       if (isGameActive()) {
         Logger.info("game state changed");
@@ -163,7 +159,7 @@ function MathGrid({ gameData, socket, gameId }) {
         setGameStage(GameStage.ANSWER_INCORRECT);
       }
     });
-  }
+  }, []);
 
   const handleGameAreaAnswerSquareClick = (row, col) => {
     Logger.debug(`answer square clicked: row = ${row}, col = ${col}`);

@@ -1,4 +1,4 @@
-import { randomElement } from "../utils/random-utils";
+import { randomElement } from "../utils/random-utils.js";
 
 function chooseNineLetterWord(words) {
   const nineLetterWords = words.filter((word) => word.length === 9);

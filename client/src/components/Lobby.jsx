@@ -1,14 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Logger } from "shared";
+import { Dropdown } from "./partials/Dropdown";
 import { Spinner } from "./partials/Spinner";
 import { getSocket } from "../services/SocketService";
 
-const columns = [
+const openGameTableColumns = [
   { key: "creator", text: "Creator" },
   { key: "game-name", text: "Game Name" },
   { key: "join", text: "" },
 ];
+
+const gameDetails = {
+  "math-grid": {
+    displayName: "Math Grid",
+  },
+  "nine-letter-word": {
+    displayName: "Nine Letter Word",
+  },
+};
+
+const gameNameDropdownOptions = [];
+Object.keys(gameDetails).forEach((key) => {
+  gameNameDropdownOptions.push({
+    displayText: gameDetails[key].displayName,
+    clickValue: key,
+  });
+});
 
 function Lobby() {
   const navigate = useNavigate();
@@ -19,7 +37,10 @@ function Lobby() {
   const [playerName, setPlayerName] = useState(null);
   const playerIdRef = useRef(null);
   const joinGameIdRef = useRef(null);
-  const gameNameRef = useRef(null);
+  const gameNameRef = useRef(gameNameDropdownOptions[0].clickValue);
+  const [gameNameSelected, setGameNameSelected] = useState(
+    gameDetails["math-grid"].displayName
+  );
 
   function navigateToGameRoom(gameId, isCreator) {
     navigate(`/game/${gameNameRef.current}`, {
@@ -73,9 +94,7 @@ function Lobby() {
   }, []);
 
   function createGameClicked() {
-    const gameName = "math-grid";
-    gameNameRef.current = gameName;
-    socketRef.current.emit("create-game", gameName);
+    socketRef.current.emit("create-game", gameNameRef.current);
   }
 
   function joinGameRequest(gameId, gameName) {
@@ -90,6 +109,14 @@ function Lobby() {
       {socketRef.current ? (
         <>
           <p>Connected as: {playerName ?? "connecting ..."}</p>
+          <Dropdown
+            options={gameNameDropdownOptions}
+            currentSelection={gameNameSelected}
+            clickHandler={(newGameNameSelected) => {
+              gameNameRef.current = newGameNameSelected;
+              setGameNameSelected(gameDetails[newGameNameSelected].displayName);
+            }}
+          />
           <button type="button" onClick={() => createGameClicked()}>
             Create Game
           </button>
@@ -100,7 +127,7 @@ function Lobby() {
       <table>
         <thead>
           <tr>
-            {columns.map((col) => (
+            {openGameTableColumns.map((col) => (
               <th key={col.key}>{col.text}</th>
             ))}
           </tr>
@@ -108,7 +135,7 @@ function Lobby() {
         <tbody>
           {isLoading ? (
             <tr>
-              <td colSpan={columns.length}>
+              <td colSpan={openGameTableColumns.length}>
                 <Spinner />
               </td>
             </tr>
