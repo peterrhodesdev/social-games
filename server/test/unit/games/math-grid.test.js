@@ -1,4 +1,4 @@
-import { generate } from "../src/games/math-grid.js";
+import { generate } from "../../../src/games/math-grid.js";
 
 const VALID_ANSWERS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const VALID_OPERATORS = ["+", "-", "*", "/"];

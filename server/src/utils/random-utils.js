@@ -5,8 +5,8 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function randomElement(array) {
-  return array[randomInt(0, array.length - 1)];
+function randomElement(arrayOrString) {
+  return arrayOrString[randomInt(0, arrayOrString.length - 1)];
 }
 
 function shuffle(array) {
