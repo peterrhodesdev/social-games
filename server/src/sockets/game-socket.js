@@ -8,6 +8,7 @@ import {
   joinRoom,
 } from "../services/game-service.js";
 import {
+  getPlayer,
   playerJoinedGameRoom,
   PlayerStatus,
 } from "../services/player-service.js";
@@ -82,6 +83,15 @@ function handleCommonGameMessages(io, socket) {
       Logger.error("unable to generate game data");
       io.in(gameId).emit("generate-game-data-fail");
     }
+  });
+
+  // Chat message
+  socket.on("chat-message-send", (gameId, playerId, message) => {
+    Logger.debug("chat message");
+    const player = getPlayer(playerId);
+    socket.broadcast
+      .to(gameId)
+      .emit("chat-message-receive", player.name, message);
   });
 }
 

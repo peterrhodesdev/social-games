@@ -192,11 +192,17 @@ function Game() {
       <div className="flex flex-row">
         <div className="w-1/2 min-w-[320px] mr-4">{gamePanel}</div>
         <div className="w-1/2 min-w-[320px] ml-4">
-          <CommunicationPanel
-            creator={creator}
-            players={players}
-            myPlayerId={playerId}
-          />
+          {socketRef.current ? (
+            <CommunicationPanel
+              creator={creator}
+              players={players}
+              myPlayerId={playerId}
+              socket={socketRef.current}
+              gameId={gameId}
+            />
+          ) : (
+            <p>Connecting...</p>
+          )}
         </div>
       </div>
     </>
