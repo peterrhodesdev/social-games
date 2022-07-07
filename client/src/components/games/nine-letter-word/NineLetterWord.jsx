@@ -4,6 +4,7 @@ import { GameStage } from "./GameStage";
 import { GameArea } from "./GameArea";
 import { GameControls } from "./GameControls";
 import { Spinner } from "../../partials/Spinner";
+import { Button } from "../../partials/Button";
 
 function countCharOccurrences(char, str) {
   return (str.match(new RegExp(char, "g")) || []).length;
@@ -117,9 +118,7 @@ function NineLetterWord({ gameData, socket, gameId }) {
           ) : (
             <p>&nbsp;</p>
           )}
-          <button type="button" onClick={() => onSubmitClick()}>
-            Submit
-          </button>
+          <Button text="Submit" onClickHandler={() => onSubmitClick()} />
           <div className="grid grid-cols-2">
             <div>
               <p>Correct:</p>
@@ -183,7 +182,10 @@ function NineLetterWord({ gameData, socket, gameId }) {
         <GameArea game={gameData} />
       </div>
       <div className="mb-4">
-        <GameControls wordSubmitHandler={handleWordEnter} />
+        <GameControls
+          wordSubmitHandler={handleWordEnter}
+          isDisabled={gameStage !== GameStage.IN_PROGRESS}
+        />
       </div>
       {bottomPanel}
     </div>

@@ -4,6 +4,7 @@ import { GameArea } from "./GameArea";
 import { GameControls } from "./GameControls";
 import { GameStage } from "./GameStage";
 import { mod } from "../../../utils/math-utils";
+import { Button } from "../../partials/Button";
 
 function MathGrid({ gameData, socket, gameId }) {
   const [isNotesMode, setIsNotesMode] = useState(false);
@@ -236,13 +237,11 @@ function MathGrid({ gameData, socket, gameId }) {
         />
       </div>
       <div>
-        <button
-          type="button"
-          onClick={() => onSubmitClick()}
-          disabled={!(canAnswerBeSubmitted() && isGameActive())}
-        >
-          Submit
-        </button>
+        <Button
+          text="Submit"
+          onClickHandler={() => onSubmitClick()}
+          isDisabled={!(canAnswerBeSubmitted() && isGameActive())}
+        />
         {gameStage === GameStage.ANSWER_CORRECT && <p>Correct</p>}
         {gameStage === GameStage.ANSWER_INCORRECT && <p>Incorrect</p>}
       </div>

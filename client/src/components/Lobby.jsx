@@ -4,6 +4,7 @@ import { Logger } from "shared";
 import { Dropdown } from "./partials/Dropdown";
 import { Spinner } from "./partials/Spinner";
 import { getSocket } from "../services/SocketService";
+import { Button } from "./partials/Button";
 
 const openGameTableColumns = [
   { key: "creator", text: "Creator" },
@@ -93,7 +94,7 @@ function Lobby() {
     socketRef.current.emit("get-game-list");
   }, []);
 
-  function createGameClicked() {
+  function onCreateGameClicked() {
     socketRef.current.emit("create-game", gameNameRef.current);
   }
 
@@ -109,6 +110,7 @@ function Lobby() {
       {socketRef.current ? (
         <>
           <p>Connected as: {playerName ?? "connecting ..."}</p>
+          <h3>Create Game</h3>
           <Dropdown
             options={gameNameDropdownOptions}
             currentSelection={gameNameSelected}
@@ -117,13 +119,12 @@ function Lobby() {
               setGameNameSelected(gameDetails[newGameNameSelected].displayName);
             }}
           />
-          <button type="button" onClick={() => createGameClicked()}>
-            Create Game
-          </button>
+          <Button text="Create" onClickHandler={() => onCreateGameClicked()} />
         </>
       ) : (
         <p>Waiting for connection...</p>
       )}
+      <h3>Open Games</h3>
       <table>
         <thead>
           <tr>
@@ -148,7 +149,7 @@ function Lobby() {
                 <td>{game.creator.name}</td>
                 <td>{game.name}</td>
                 <td>
-                  <button type="button">join</button>
+                  <Button text="Join" />
                 </td>
               </tr>
             ))

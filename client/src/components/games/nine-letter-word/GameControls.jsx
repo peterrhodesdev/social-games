@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { TextSubmit } from "../../partials/TextSubmit";
 
-function GameControls({ wordSubmitHandler }) {
+function GameControls({ wordSubmitHandler, isDisabled }) {
   const [word, setWord] = useState("");
 
   const handleWordSubmit = (e) => {
@@ -18,7 +18,8 @@ function GameControls({ wordSubmitHandler }) {
       textValue={word}
       onChangeHandler={handleChange}
       placeholderText="enter word..."
-      buttonText="Enter"
+      buttonText="Guess"
+      isDisabled={isDisabled}
     />
   );
 }

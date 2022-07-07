@@ -66,6 +66,9 @@ function CommunicationPanel({ creator, players, myPlayerId, socket, gameId }) {
 
   const handleWordSubmit = (e) => {
     e.preventDefault();
+    if (chatMessage === "") {
+      return;
+    }
     socket.emit("chat-message-send", gameId, myPlayerId, chatMessage);
     setChatMessages((prevState) => [
       ...prevState,
@@ -84,14 +87,17 @@ function CommunicationPanel({ creator, players, myPlayerId, socket, gameId }) {
       </div>
       <div>
         <h3>Chat</h3>
-        {displayChatMessages}
-        <TextSubmit
-          submitHandler={handleWordSubmit}
-          textValue={chatMessage}
-          onChangeHandler={handleChange}
-          placeholderText="enter message to chat..."
-          buttonText="Enter"
-        />
+        <div className="select-none">
+          {displayChatMessages}
+          <TextSubmit
+            submitHandler={handleWordSubmit}
+            textValue={chatMessage}
+            onChangeHandler={handleChange}
+            placeholderText="enter message to chat..."
+            buttonText="Enter"
+            isDisabled={!players || players.length <= 1}
+          />
+        </div>
       </div>
     </>
   );
