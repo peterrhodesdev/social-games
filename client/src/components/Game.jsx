@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { Logger } from "shared";
-import { getSocket } from "../../services/SocketService";
-import { Button } from "../partials/Button";
-import { CommunicationPanel } from "./CommunicationPanel";
-import { MathGrid } from "./math-grid/MathGrid";
-import { NineLetterWord } from "./nine-letter-word/NineLetterWord";
+import { getSocket } from "../services/SocketService";
+import { Button } from "./partials/Button";
+import { CommunicationPanel } from "./communication-panel/CommunicationPanel";
+import { MathGrid } from "./games/math-grid/MathGrid";
+import { NineLetterWord } from "./games/nine-letter-word/NineLetterWord";
 
 const gameDetails = {
   "math-grid": {
@@ -189,8 +189,8 @@ function Game() {
     <>
       <h1>{gameDetails[gameName].displayName}</h1>
       <div className="flex flex-row">
-        <div className="w-1/2 min-w-[320px] mr-4">{gamePanel}</div>
-        <div className="w-1/2 min-w-[320px] ml-4">
+        <div className="w-1/2 min-w-[320px] mx-1">{gamePanel}</div>
+        <div className="sticky top-2 w-1/2 min-w-[320px] h-fit px-2 py-2 rounded-sm bg-gray-50 border border-gray-100">
           {socketRef.current ? (
             <CommunicationPanel
               creator={creator}

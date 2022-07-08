@@ -4,7 +4,7 @@ import { Footer } from "./partials/Footer";
 import { Header } from "./partials/Header";
 import { Lobby } from "./Lobby";
 import { NotFound } from "./NotFound";
-import { Game } from "./games/Game";
+import { Game } from "./Game";
 
 function App() {
   return (

@@ -125,7 +125,7 @@ function Lobby() {
         <p>Waiting for connection...</p>
       )}
       <h3>Open Games</h3>
-      <table>
+      <table className="select-none">
         <thead>
           <tr>
             {openGameTableColumns.map((col) => (
@@ -145,6 +145,7 @@ function Lobby() {
               <tr
                 key={game.id}
                 onClick={() => joinGameRequest(game.id, game.name)}
+                className="cursor-pointer"
               >
                 <td>{game.creator.name}</td>
                 <td>{game.name}</td>
