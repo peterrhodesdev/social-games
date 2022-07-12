@@ -2,9 +2,9 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Footer } from "./partials/Footer";
 import { Header } from "./partials/Header";
-import { Lobby } from "./Lobby";
+import { Lobby } from "./lobby/Lobby";
 import { NotFound } from "./NotFound";
-import { Game } from "./Game";
+import { Game } from "./games/Game";
 
 function App() {
   return (

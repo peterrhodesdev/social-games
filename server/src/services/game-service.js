@@ -31,12 +31,13 @@ const GameStatus = Object.freeze({
  * Creates a new game
  * @param {string} playerId ID of the player creating the game
  * @param {string} gameName name of the game
+ * @param {string} password game password
  * @returns {Game} new game
  * @throws if the game name is invalid
  * @throws if the player is not found
  * @throws if the player is involved in another game
  */
-function createNewGame(playerId, gameName) {
+function createNewGame(playerId, gameName, password) {
   if (!Object.prototype.hasOwnProperty.call(gameLogic, gameName)) {
     throw new Error(`invalid game name: ${gameName}`);
   }
@@ -55,6 +56,7 @@ function createNewGame(playerId, gameName) {
     name: gameName,
     status: GameStatus.CREATED,
     playerIds: [],
+    password,
   };
   games.push(game);
   Logger.info("created game", game);
@@ -167,11 +169,13 @@ function createRoom(gameId, playerId) {
  * Marks a player as requested to join a game
  * @param {string} gameId game ID
  * @param {string} playerId player ID
+ * @param {string} password game password
  * @throws if player is already in a game
  * @throws if player status is invalid
  * @throws if game status is invalid
+ * @throws if game password doesn't match submitted password
  */
-function joinGameRequest(gameId, playerId) {
+function joinGameRequest(gameId, playerId, password) {
   const player = getPlayer(playerId);
 
   // check player not already in game
@@ -190,6 +194,11 @@ function joinGameRequest(gameId, playerId) {
   const game = getGame(gameId);
   if (game.status !== GameStatus.OPEN) {
     Logger.logAndThrowError(`game ${gameId} isn't open: ${game.status}`, game);
+  }
+
+  // check password matches
+  if (game.password !== password) {
+    Logger.logAndThrowError(`passwords don't match`);
   }
 
   playerRequestedToJoinGame(player.id, gameId);

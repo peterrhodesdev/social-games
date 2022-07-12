@@ -49,10 +49,12 @@ function socketNamespace(io) {
     });
 
     // Create a new game
-    socket.on("create-game", (gameName) => {
-      Logger.info(`create game ${gameName} for player ${player.id}`);
+    socket.on("create-game", (gameName, password) => {
+      Logger.info(
+        `create game ${gameName} for player ${player.id} with password ${password}`
+      );
       try {
-        const game = createNewGame(player.id, gameName, io);
+        const game = createNewGame(player.id, gameName, password);
         socket.emit("create-game-success", game.id);
       } catch (err) {
         socket.emit("create-game-fail");
@@ -60,10 +62,12 @@ function socketNamespace(io) {
     });
 
     // Join a game
-    socket.on("join-game-request", (gameId) => {
-      Logger.info(`${player.id} requested to join game ${gameId}`);
+    socket.on("join-game-request", (gameId, password) => {
+      Logger.info(
+        `${player.id} requested to join game ${gameId} with password ${password}`
+      );
       try {
-        joinGameRequest(gameId, player.id);
+        joinGameRequest(gameId, player.id, password);
         socket.emit("join-game-request-success");
       } catch (err) {
         Logger.warn("join game request failed");

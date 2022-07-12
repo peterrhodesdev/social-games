@@ -16,7 +16,7 @@ function CommunicationPanel({ creator, players, myPlayerId, socket, gameId }) {
     });
   }, []);
 
-  const handleWordSubmit = (e) => {
+  const handleChatMessageSubmit = (e) => {
     e.preventDefault();
     if (chatMessage === "") {
       return;
@@ -46,7 +46,7 @@ function CommunicationPanel({ creator, players, myPlayerId, socket, gameId }) {
         <div className="select-none">
           <ChatMessages chatMessages={chatMessages} />
           <TextSubmit
-            submitHandler={handleWordSubmit}
+            submitHandler={handleChatMessageSubmit}
             textValue={chatMessage}
             onChangeHandler={handleChange}
             placeholderText="enter message to chat..."

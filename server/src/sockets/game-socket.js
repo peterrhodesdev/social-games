@@ -44,7 +44,6 @@ function handleCommonGameMessages(io, socket) {
       playerJoinedGameRoom(playerId, gameId, socket.id);
       socket.join(gameId);
       socket.emit("create-room-success");
-      // TODO remove emit and on fail delete game
       emitGameList();
       emitPlayerList(io, gameId);
     } catch (err) {
@@ -62,9 +61,8 @@ function handleCommonGameMessages(io, socket) {
       playerJoinedGameRoom(playerId, gameId, socket.id);
       socket.join(gameId);
       socket.emit("join-room-success");
+      emitGameList();
       emitPlayerList(io, gameId);
-      // TODO move game data being sent to later
-      // io.in(gameId).emit("game-data", game.gameData);
     } catch (err) {
       Logger.warn("unable to join room");
       socket.emit("join-room-fail");

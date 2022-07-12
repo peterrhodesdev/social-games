@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { Logger } from "shared";
-import { getSocket } from "../services/SocketService";
-import { Button } from "./partials/Button";
-import { CommunicationPanel } from "./communication-panel/CommunicationPanel";
-import { MathGrid } from "./games/math-grid/MathGrid";
-import { NineLetterWord } from "./games/nine-letter-word/NineLetterWord";
+import { getSocket } from "../../services/SocketService";
+import { Button } from "../partials/Button";
+import { CommunicationPanel } from "../communication-panel/CommunicationPanel";
+import { MathGrid } from "./math-grid/MathGrid";
+import { NineLetterWord } from "./nine-letter-word/NineLetterWord";
 
 const gameDetails = {
   "math-grid": {
