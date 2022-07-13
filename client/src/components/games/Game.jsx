@@ -7,6 +7,7 @@ import { CommunicationPanel } from "../communication-panel/CommunicationPanel";
 import { MathGrid } from "./math-grid/MathGrid";
 import { NineLetterWord } from "./nine-letter-word/NineLetterWord";
 import { usePlayer } from "../../contexts/UserContext";
+import { Spinner } from "../partials/Spinner";
 
 const gameDetails = {
   "math-grid": {
@@ -161,7 +162,7 @@ function Game() {
       );
       break;
     case GameStage.GENERATING_GAME:
-      gamePanel = <p>Generating game...</p>;
+      gamePanel = <Spinner />;
       break;
     case GameStage.IN_PROGRESS:
     case GameStage.COMPLETED:

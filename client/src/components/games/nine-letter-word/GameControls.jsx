@@ -1,21 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import { TextSubmit } from "../../partials/TextSubmit";
 
-function GameControls({ wordSubmitHandler, isDisabled }) {
-  const [word, setWord] = useState("");
-
-  const handleWordSubmit = (e) => {
+function GameControls({
+  guess,
+  guessChangeHandler,
+  guessSubmitHandler,
+  isDisabled,
+}) {
+  const handleGuessSubmit = (e) => {
     e.preventDefault();
-    wordSubmitHandler(word.toLowerCase());
-    setWord("");
+    guessSubmitHandler();
   };
 
-  const handleChange = (e) => setWord(e.target.value);
+  const handleChange = (e) => guessChangeHandler(e.target.value);
 
   return (
     <TextSubmit
-      submitHandler={handleWordSubmit}
-      textValue={word}
+      submitHandler={handleGuessSubmit}
+      textValue={guess}
       onChangeHandler={handleChange}
       placeholderText="enter word..."
       buttonText="Guess"

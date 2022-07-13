@@ -1,11 +1,15 @@
 import React from "react";
 
-function Square({ letter, isCentre }) {
+function Square({ letter, isCentre, letterClickHandler }) {
+  const upperCaseLetter = letter.toUpperCase();
+
   return (
-    <div
+    <button
+      type="button"
       className={`aspect-square w-full ${
         isCentre ? " bg-black " : " bg-white "
-      } flex items-center justify-center border border-black`}
+      } flex items-center justify-center border border-black cursor-pointer`}
+      onClick={() => letterClickHandler(upperCaseLetter)}
     >
       <svg viewBox="0 0 20 20">
         <text
@@ -15,10 +19,10 @@ function Square({ letter, isCentre }) {
           dominantBaseline="central"
           style={{ fill: isCentre ? "white" : "black" }}
         >
-          {letter.toUpperCase()}
+          {upperCaseLetter}
         </text>
       </svg>
-    </div>
+    </button>
   );
 }
 

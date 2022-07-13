@@ -48,7 +48,7 @@ function CommunicationPanel({ creator, players, socket, gameId }) {
             textValue={chatMessage}
             onChangeHandler={handleChange}
             placeholderText="enter message to chat..."
-            buttonText="Enter"
+            buttonText="send"
             isDisabled={!players || players.length <= 1}
           />
         </div>

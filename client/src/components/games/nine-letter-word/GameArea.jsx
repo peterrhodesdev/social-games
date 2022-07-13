@@ -1,7 +1,7 @@
 import React from "react";
 import { Square } from "./Square";
 
-function GameArea({ game }) {
+function GameArea({ game, letterClickHandler }) {
   const grid = [];
   for (let i = 0; i < 3; i += 1) {
     grid[i] = [];
@@ -10,6 +10,7 @@ function GameArea({ game }) {
         <Square
           letter={game.nineLetterWordShuffled[i * 3 + j]}
           isCentre={i === 1 && j === 1}
+          letterClickHandler={letterClickHandler}
         />
       );
     }

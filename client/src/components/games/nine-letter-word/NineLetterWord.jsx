@@ -15,6 +15,7 @@ function NineLetterWord({ gameData, socket, gameId }) {
   const [gameState, setGameState] = useState({ correct: [], incorrect: [] });
   const [answer, setAnswer] = useState(null);
   const [message, setMessage] = useState(null);
+  const [currentGuess, setCurrentGuess] = useState("");
 
   function createMessage(word, reason, isCorrect) {
     return { text: `"${word}": ${reason}`, isCorrect };
@@ -91,11 +92,12 @@ function NineLetterWord({ gameData, socket, gameId }) {
     return true;
   }
 
-  const handleWordEnter = (word) => {
-    Logger.debug(`word entered: ${word}`);
-    if (checkWord(word)) {
-      socket.emit("word-entered", gameId, word);
+  const handleGuessEnter = () => {
+    const lowerCaseGuess = currentGuess.toLowerCase();
+    if (checkWord(lowerCaseGuess)) {
+      socket.emit("word-entered", gameId, lowerCaseGuess);
     }
+    setCurrentGuess("");
   };
 
   function onSubmitClick() {
@@ -103,6 +105,14 @@ function NineLetterWord({ gameData, socket, gameId }) {
     setGameStage(GameStage.SUBMITTED);
     socket.emit("game-finished", gameId);
   }
+
+  const handleLetterClick = (letter) => {
+    setCurrentGuess((prevState) => `${prevState}${letter}`);
+  };
+
+  const handleGuessChange = (newGuess) => {
+    setCurrentGuess(newGuess.toUpperCase());
+  };
 
   let bottomPanel;
   switch (gameStage) {
@@ -179,11 +189,13 @@ function NineLetterWord({ gameData, socket, gameId }) {
   return (
     <div disabled={gameStage !== GameStage.IN_PROGRESS}>
       <div className="mb-12">
-        <GameArea game={gameData} />
+        <GameArea game={gameData} letterClickHandler={handleLetterClick} />
       </div>
       <div className="mb-4">
         <GameControls
-          wordSubmitHandler={handleWordEnter}
+          guess={currentGuess}
+          guessChangeHandler={handleGuessChange}
+          guessSubmitHandler={handleGuessEnter}
           isDisabled={gameStage !== GameStage.IN_PROGRESS}
         />
       </div>
