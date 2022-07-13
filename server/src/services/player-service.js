@@ -147,6 +147,14 @@ function playerLeftGame(playerId) {
   });
 }
 
+function updatePlayerName(playerId, newPlayerName) {
+  if (players.some((p) => p.name === newPlayerName)) {
+    return false;
+  }
+  updatePlayer(playerId, { name: newPlayerName });
+  return true;
+}
+
 export {
   createNewPlayer,
   deletePlayer,
@@ -157,5 +165,6 @@ export {
   playerJoinedGameRoom,
   playerLeftGame,
   playerRequestedToJoinGame,
+  updatePlayerName,
   PlayerStatus,
 };

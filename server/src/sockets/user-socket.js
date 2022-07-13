@@ -7,7 +7,11 @@ import {
   joinGameRequest,
   getGamePublicInfo,
 } from "../services/game-service.js";
-import { createNewPlayer, getPlayer } from "../services/player-service.js";
+import {
+  createNewPlayer,
+  getPlayer,
+  updatePlayerName,
+} from "../services/player-service.js";
 
 let ioSaved = null;
 
@@ -41,6 +45,15 @@ function socketNamespace(io) {
     // Get the socket's player
     socket.on("get-my-player", () => {
       socket.emit("my-player", getPlayer(player.id));
+    });
+
+    // Change player name
+    socket.on("player-name-change", (newPlayerName) => {
+      if (updatePlayerName(player.id, newPlayerName)) {
+        socket.emit("player-name-change-success", newPlayerName);
+      } else {
+        socket.emit("player-name-change-fail");
+      }
     });
 
     // Get the list of games

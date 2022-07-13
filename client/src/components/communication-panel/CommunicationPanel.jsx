@@ -5,7 +5,7 @@ import { ChatMessages } from "./ChatMessages";
 import { PlayersTable } from "./PlayersTable";
 
 function CommunicationPanel({ creator, players, socket, gameId }) {
-  const player = usePlayer();
+  const { player } = usePlayer();
   const [chatMessage, setChatMessage] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
 

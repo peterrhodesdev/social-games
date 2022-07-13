@@ -31,9 +31,20 @@ function UserProvider({ children }) {
     return () => userSocket.disconnect();
   }, []);
 
+  const playerMemo = React.useMemo(
+    () => ({
+      player,
+      updatePlayerName: (newPlayerName) =>
+        setPlayer((prevState) => ({ ...prevState, name: newPlayerName })),
+    }),
+    [player]
+  );
+
   return (
     <SocketContext.Provider value={socket}>
-      <PlayerContext.Provider value={player}>{children}</PlayerContext.Provider>
+      <PlayerContext.Provider value={playerMemo}>
+        {children}
+      </PlayerContext.Provider>
     </SocketContext.Provider>
   );
 }

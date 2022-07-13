@@ -2,7 +2,9 @@ import React from "react";
 
 function Footer() {
   return (
-    <div className="sticky bottom-0 text-center border-t-4">Social Games</div>
+    <div className="sticky bottom-0 text-center bg-gray-500 text-gray-300">
+      Social Games
+    </div>
   );
 }
 

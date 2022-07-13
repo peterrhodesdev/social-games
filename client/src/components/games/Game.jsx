@@ -38,7 +38,7 @@ function Game() {
     return <Navigate to="/" />;
   }
 
-  const player = usePlayer();
+  const { player } = usePlayer();
   const { gameId, gameName, isCreator } = location.state;
   Logger.debug(
     `Game: game ID = ${gameId}, name = ${gameName}, isCreator = ${isCreator}`

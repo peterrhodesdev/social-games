@@ -2,7 +2,7 @@ import React from "react";
 import { usePlayer } from "../../contexts/UserContext";
 
 function PlayersTable({ creator, players }) {
-  const myPlayer = usePlayer();
+  const myPlayer = usePlayer().player;
 
   return (
     <div className="w-full h-36 overflow-y-scroll select-none">

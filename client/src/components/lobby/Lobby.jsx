@@ -5,12 +5,11 @@ import { usePlayer, useUserSocket } from "../../contexts/UserContext";
 import { Spinner } from "../partials/Spinner";
 import { CreateGame } from "./CreateGame";
 import { GameList } from "./GameList";
-import { UserDetails } from "./UserDetails";
 
 function Lobby() {
   const navigate = useNavigate();
   const userSocket = useUserSocket();
-  const player = usePlayer();
+  const { player } = usePlayer();
 
   const [isLoading, setIsLoading] = useState(false);
   const [games, setGames] = useState([]);
@@ -90,7 +89,6 @@ function Lobby() {
       <h1>Lobby</h1>
       {userSocket && player ? (
         <>
-          <UserDetails />
           <h3>Create Game</h3>
           <CreateGame
             createGameClickHandler={handleCreateGameClick}

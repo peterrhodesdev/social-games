@@ -1,16 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Disclosure } from "@headlessui/react";
-import { MenuIcon, XIcon } from "@heroicons/react/outline";
+import { MenuIcon, UserCircleIcon, XIcon } from "@heroicons/react/outline";
+import { usePlayer } from "../../contexts/UserContext";
 
 // Style colors defined here so can be easily updated
-const TITLE_STYLE = "text-gray-100";
+const TITLE_STYLE = "text-gray-300";
 const DISCLOSURE_STYLE = "bg-gray-500";
-const LINK_STYLE = "text-gray-300 hover:bg-gray-700 hover:text-white";
+const LINK_STYLE = "text-gray-100 hover:bg-gray-700 hover:text-white";
 
 const links = [{ key: "lobby", text: "Lobby", to: "/" }];
 
 function Header() {
+  const { player } = usePlayer();
+
   return (
     <Disclosure as="nav" className={DISCLOSURE_STYLE}>
       {({ open }) => (
@@ -49,6 +52,20 @@ function Header() {
                     ))}
                   </div>
                 </div>
+              </div>
+              <div className="right-0 select-none cursor-pointer">
+                <Link
+                  to="/user"
+                  className={`${LINK_STYLE} flex flex-row items-center px-3 py-3 rounded-md text-sm font-medium`}
+                >
+                  <div className="mr-2">
+                    {player ? player.name : "connecting..."}
+                  </div>
+                  <UserCircleIcon
+                    className="block h-6 w-6"
+                    aria-hidden="true"
+                  />
+                </Link>
               </div>
             </div>
           </div>
