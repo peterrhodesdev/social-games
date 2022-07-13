@@ -1,24 +1,13 @@
 import React, { useRef, useState } from "react";
+import { getGameByName, getGames } from "../../GameList";
 import { Button } from "../partials/Button";
 import { Dropdown } from "../partials/Dropdown";
 import { Textbox } from "../partials/Textbox";
 
-const gameDetails = {
-  "math-grid": {
-    displayName: "Math Grid",
-  },
-  "nine-letter-word": {
-    displayName: "Nine Letter Word",
-  },
-};
-
-const gameNameDropdownOptions = [];
-Object.keys(gameDetails).forEach((key) => {
-  gameNameDropdownOptions.push({
-    displayText: gameDetails[key].displayName,
-    clickValue: key,
-  });
-});
+const gameNameDropdownOptions = getGames().map((game) => ({
+  displayText: game.displayName,
+  clickValue: game.name,
+}));
 
 function CreateGame({ createGameClickHandler, canCreate }) {
   const gameNameRef = useRef(gameNameDropdownOptions[0].clickValue);
@@ -36,7 +25,7 @@ function CreateGame({ createGameClickHandler, canCreate }) {
           currentSelection={gameNameSelected}
           clickHandler={(newGameNameSelected) => {
             gameNameRef.current = newGameNameSelected;
-            setGameNameSelected(gameDetails[newGameNameSelected].displayName);
+            setGameNameSelected(getGameByName(newGameNameSelected).displayName);
           }}
         />
       </div>

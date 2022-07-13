@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { getGameByName } from "../../GameList";
 import { Button } from "../partials/Button";
 import { Spinner } from "../partials/Spinner";
 import { Textbox } from "../partials/Textbox";
@@ -31,7 +32,7 @@ function GameList({
       games.map((game) => (
         <tr key={game.id}>
           <td>{game.creator.name}</td>
-          <td>{game.name}</td>
+          <td>{getGameByName(game.name).displayName}</td>
           <td>{game.players ? game.players.length : 0}</td>
           <td className="flex flex-col items-end">
             <Textbox

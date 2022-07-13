@@ -1,15 +1,28 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Disclosure } from "@headlessui/react";
 import { MenuIcon, UserCircleIcon, XIcon } from "@heroicons/react/outline";
 import { usePlayer } from "../../contexts/UserContext";
+import { ExpandedLinks } from "./ExpandedLinks";
+import { CollapsedLinks } from "./CollapsedLinks";
 
 // Style colors defined here so can be easily updated
 const TITLE_STYLE = "text-gray-300";
 const DISCLOSURE_STYLE = "bg-gray-500";
 const LINK_STYLE = "text-gray-100 hover:bg-gray-700 hover:text-white";
 
-const links = [{ key: "lobby", text: "Lobby", to: "/" }];
+const links = [
+  { key: "lobby", text: "Lobby", to: "/" },
+  {
+    key: "guides",
+    text: "Guides",
+    to: "/guide/",
+    subLinks: [
+      { key: "math-grid", text: "Math Grid" },
+      { key: "nine-letter-word", text: "Nine Letter Word" },
+    ],
+  },
+];
 
 function Header() {
   const { player } = usePlayer();
@@ -18,6 +31,7 @@ function Header() {
     <Disclosure as="nav" className={DISCLOSURE_STYLE}>
       {({ open }) => (
         <>
+          {/* Expanded */}
           <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div className="relative flex items-center justify-between h-16">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -41,15 +55,7 @@ function Header() {
                 </div>
                 <div className="hidden sm:block sm:ml-6">
                   <div className="flex space-x-4">
-                    {links.map((link) => (
-                      <Link
-                        key={link.key}
-                        to={link.to}
-                        className={`${LINK_STYLE} px-3 py-2 rounded-md text-sm font-medium`}
-                      >
-                        {link.text}
-                      </Link>
-                    ))}
+                    <ExpandedLinks links={links} linkStyle={LINK_STYLE} />
                   </div>
                 </div>
               </div>
@@ -70,18 +76,10 @@ function Header() {
             </div>
           </div>
 
+          {/* Collapsed */}
           <Disclosure.Panel className="sm:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {links.map((link) => (
-                <Disclosure.Button
-                  key={link.key}
-                  as={Link}
-                  to={link.to}
-                  className={`${LINK_STYLE} block px-3 py-2 rounded-md text-base font-medium`}
-                >
-                  {link.text}
-                </Disclosure.Button>
-              ))}
+              <CollapsedLinks links={links} linkStyle={LINK_STYLE} />
             </div>
           </Disclosure.Panel>
         </>

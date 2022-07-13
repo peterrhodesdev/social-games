@@ -4,21 +4,9 @@ import { Logger } from "shared";
 import { createSocket } from "../../services/SocketService";
 import { Button } from "../partials/Button";
 import { CommunicationPanel } from "../communication-panel/CommunicationPanel";
-import { MathGrid } from "./math-grid/MathGrid";
-import { NineLetterWord } from "./nine-letter-word/NineLetterWord";
 import { usePlayer } from "../../contexts/UserContext";
 import { Spinner } from "../partials/Spinner";
-
-const gameDetails = {
-  "math-grid": {
-    displayName: "Math Grid",
-    component: (props) => <MathGrid {...props} />,
-  },
-  "nine-letter-word": {
-    displayName: "Nine Letter Word",
-    component: (props) => <NineLetterWord {...props} />,
-  },
-};
+import { getGameByName } from "../../GameList";
 
 const GameStage = Object.freeze({
   CONNECTING: "CONNECTING",
@@ -44,6 +32,7 @@ function Game() {
   Logger.debug(
     `Game: game ID = ${gameId}, name = ${gameName}, isCreator = ${isCreator}`
   );
+  const game = getGameByName(gameName);
 
   const socketRef = useRef(null);
   const [gameStage, setGameStage] = useState(GameStage.CONNECTING);
@@ -169,7 +158,7 @@ function Game() {
       gamePanel = (
         <div className="flex justify-center select-none">
           <div className="game-container">
-            {gameDetails[gameName].component({
+            {game.component({
               gameData,
               socket: socketRef.current,
               gameId,
@@ -190,7 +179,7 @@ function Game() {
 
   return (
     <>
-      <h1>{gameDetails[gameName].displayName}</h1>
+      <h1>{game.displayName}</h1>
       <div className="flex flex-row">
         <div className="w-1/2 min-w-[320px] mx-1">{gamePanel}</div>
         <div className="sticky top-2 w-1/2 min-w-[320px] h-fit px-2 py-2 rounded-sm bg-gray-50 border border-gray-100">
