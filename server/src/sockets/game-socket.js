@@ -1,5 +1,5 @@
 import { Logger } from "shared";
-import { emitGameList } from "./lobby-socket.js";
+import { emitGameList } from "./user-socket.js";
 import {
   createRoom,
   deletePlayerFromGames,

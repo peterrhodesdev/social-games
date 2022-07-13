@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { Logger } from "shared";
-import { getSocket } from "../../services/SocketService";
+import { createSocket } from "../../services/SocketService";
 import { Button } from "../partials/Button";
 import { CommunicationPanel } from "../communication-panel/CommunicationPanel";
 import { MathGrid } from "./math-grid/MathGrid";
 import { NineLetterWord } from "./nine-letter-word/NineLetterWord";
+import { usePlayer } from "../../contexts/UserContext";
 
 const gameDetails = {
   "math-grid": {
@@ -37,9 +38,10 @@ function Game() {
     return <Navigate to="/" />;
   }
 
-  const { gameId, gameName, isCreator, playerId } = location.state;
+  const player = usePlayer();
+  const { gameId, gameName, isCreator } = location.state;
   Logger.debug(
-    `Game: game ID = ${gameId}, name = ${gameName}, isCreator = ${isCreator}, player ID = ${playerId}`
+    `Game: game ID = ${gameId}, name = ${gameName}, isCreator = ${isCreator}`
   );
 
   const socketRef = useRef(null);
@@ -49,7 +51,7 @@ function Game() {
   const [players, setPlayers] = useState([]);
 
   useEffect(() => {
-    socketRef.current = getSocket(`game/${gameName}`, false);
+    socketRef.current = createSocket(`game/${gameName}`);
 
     socketRef.current.on("create-room-success", () => {
       Logger.info("create room success");
@@ -90,9 +92,9 @@ function Game() {
     });
 
     if (isCreator) {
-      socketRef.current.emit("create-room", gameId, playerId);
+      socketRef.current.emit("create-room", gameId, player.id);
     } else {
-      socketRef.current.emit("join-room", gameId, playerId);
+      socketRef.current.emit("join-room", gameId, player.id);
     }
 
     return () => socketRef.current.disconnect();
@@ -195,7 +197,6 @@ function Game() {
             <CommunicationPanel
               creator={creator}
               players={players}
-              myPlayerId={playerId}
               socket={socketRef.current}
               gameId={gameId}
             />

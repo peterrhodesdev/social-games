@@ -1,10 +1,21 @@
 import React from "react";
+import { usePlayer } from "../../contexts/UserContext";
 
-function UserDetails({ playerName }) {
+function UserDetails() {
+  const player = usePlayer();
+
   return (
-    <p>
-      Connected as: <strong>{playerName ?? "connecting ..."}</strong>
-    </p>
+    <div>
+      {player ? (
+        <div>
+          <div>
+            Connected as: <strong>{player.name}</strong>
+          </div>
+        </div>
+      ) : (
+        "connecting..."
+      )}
+    </div>
   );
 }
 

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { usePlayer } from "../../contexts/UserContext";
 import { TextSubmit } from "../partials/TextSubmit";
 import { ChatMessages } from "./ChatMessages";
 import { PlayersTable } from "./PlayersTable";
 
-function CommunicationPanel({ creator, players, myPlayerId, socket, gameId }) {
+function CommunicationPanel({ creator, players, socket, gameId }) {
+  const player = usePlayer();
   const [chatMessage, setChatMessage] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
 
@@ -21,7 +23,7 @@ function CommunicationPanel({ creator, players, myPlayerId, socket, gameId }) {
     if (chatMessage === "") {
       return;
     }
-    socket.emit("chat-message-send", gameId, myPlayerId, chatMessage);
+    socket.emit("chat-message-send", gameId, player.id, chatMessage);
     setChatMessages((prevState) => [
       ...prevState,
       { text: chatMessage, playerName: null, fromMe: true },
@@ -35,11 +37,7 @@ function CommunicationPanel({ creator, players, myPlayerId, socket, gameId }) {
     <>
       <div>
         <h3 className="mt-2">Players: {players.length}</h3>
-        <PlayersTable
-          creator={creator}
-          players={players}
-          myPlayerId={myPlayerId}
-        />
+        <PlayersTable creator={creator} players={players} />
       </div>
       <div>
         <h3>Chat</h3>

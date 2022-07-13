@@ -1,6 +1,9 @@
 import React from "react";
+import { usePlayer } from "../../contexts/UserContext";
 
-function PlayersTable({ creator, players, myPlayerId }) {
+function PlayersTable({ creator, players }) {
+  const myPlayer = usePlayer();
+
   return (
     <div className="w-full h-36 overflow-y-scroll select-none">
       <table className="my-0 py-0">
@@ -17,7 +20,7 @@ function PlayersTable({ creator, players, myPlayerId }) {
               <tr key={player.id}>
                 <td>{player.name}</td>
                 <td>{`${creator.id === player.id ? "Creator " : ""}${
-                  player.id === myPlayerId ? "(you)" : ""
+                  player.id === myPlayer.id ? "(you)" : ""
                 }`}</td>
               </tr>
             ))}

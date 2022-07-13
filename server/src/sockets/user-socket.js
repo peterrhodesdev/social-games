@@ -26,11 +26,11 @@ function emitGameList() {
 function socketNamespace(io) {
   ioSaved = io;
   io.on("connection", (socket) => {
-    Logger.info(`lobby socket connected: ${socket.id}`);
+    Logger.info(`user socket connected: ${socket.id}`);
     const player = createNewPlayer(socket.id);
 
     socket.on("disconnect", () => {
-      Logger.info(`lobby socket disconnected: ${socket.id}`);
+      Logger.info(`user socket disconnected: ${socket.id}`);
       const playerId = player.id;
       const gameId = deleteOpenGamesByPlayer(playerId);
       if (gameId) {
@@ -43,7 +43,7 @@ function socketNamespace(io) {
       socket.emit("my-player", getPlayer(player.id));
     });
 
-    // Gt the list of games
+    // Get the list of games
     socket.on("get-game-list", () => {
       socket.emit("game-list", filterGames(getGames()));
     });

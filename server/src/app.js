@@ -5,7 +5,7 @@ import * as http from "http";
 import * as fs from "fs";
 import { Server } from "socket.io";
 import { Logger } from "shared";
-import { socketNamespace as lobbySocket } from "./sockets/lobby-socket.js";
+import { socketNamespace as userSocket } from "./sockets/user-socket.js";
 import { socketNamespace as mathGridSocket } from "./sockets/math-grid-socket.js";
 import { socketNamespace as nineLetterWordSocket } from "./sockets/nine-letter-word-socket.js";
 import { populateNineLetterWordsData } from "./services/game-service.js";
@@ -32,7 +32,7 @@ const words = fs
 populateNineLetterWordsData(words);
 
 // Socket namespaces
-lobbySocket(io.of("/lobby"));
+userSocket(io.of("/user"));
 mathGridSocket(io.of("/game/math-grid"));
 nineLetterWordSocket(io.of("/game/nine-letter-word"));
 
