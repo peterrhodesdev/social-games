@@ -27,14 +27,14 @@ const COLOR_BLUE = "\x1b[34m";
 const COLOR_WHITE = "\x1b[37m";
 
 const consoleExists = typeof console !== "undefined";
-let functionDepth = 0;
+const FUNCTION_DEPTH = 0;
 
 function getTimestamp() {
   return new Date().toLocaleString(TIMESTAMP_LOCALE);
 }
 
 function getCallingFunction() {
-  const depth = 3 + functionDepth;
+  const depth = 3 + FUNCTION_DEPTH;
   try {
     throw new Error("log stack");
   } catch (err) {
@@ -96,10 +96,9 @@ function debug(...args) {
   }
 }
 
-function logError(...args) {
-  const message = getMessage(Level.ERROR, args);
+// private
+function logError(message) {
   console.log(`${COLOR_RED}${message}${COLOR_RESET}`);
-  return message;
 }
 
 /**
@@ -108,7 +107,8 @@ function logError(...args) {
  */
 function error(...args) {
   if (canLog(Level.ERROR)) {
-    logError(args);
+    const message = getMessage(Level.ERROR, args);
+    logError(message);
   }
 }
 
@@ -139,12 +139,11 @@ function warn(...args) {
  * @param  {...any} args list of objects whose string representations get concatenated into one string
  */
 function logAndThrowError(...args) {
+  const message = getMessage(Level.ERROR, args);
   if (canLog(Level.ERROR)) {
-    functionDepth = 1;
-    const message = logError(args);
-    functionDepth = 0;
-    throw new Error(message);
+    logError(message);
   }
+  throw new Error(message);
 }
 
 const Logger = {

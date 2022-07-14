@@ -16,7 +16,7 @@ const games = [
       "There is no division by one.",
     ],
     controls: [
-      "Click on the grid square you wish to solve to highlight it.",
+      "Click on the grid square you wish to solve to highlight it or use the arrow keys to move around the grid.",
       "Clicking a number from 1 to 9 will add/remove that number to/from the highlighted square.",
       "Click the notes icon to enable/disable pencil marks (this allows you enter more than one number in the square).",
       `Once all squares are filled in with a single number click "Submit" to check your solution. If it is correct the game will end, otherwise you can fix any mistakes and resubmit.`,
