@@ -1,6 +1,6 @@
 # Social Games
 
-Multiplayer online games with chat. This project was built with React.js, Tailwind CSS, Node.js, Express.js, and Socket.IO.
+Multiplayer online games with video and text chat. This project was built with React.js, Tailwind CSS, Node.js, Express.js, Socket.IO (WebSocket), and simple-peer (WebRTC).
 
 Check out the project deployed on Heroku here:
 
@@ -49,7 +49,6 @@ Follow these steps to deploy the app to Heroku:
 
 ## Ideas for improvement
 
-- Use WebRTC for in game video chat
 - Make mobile friendly
 - Add user authentication with Passport
 - Hook up a DB to save users, track game history, create friend groups, ...

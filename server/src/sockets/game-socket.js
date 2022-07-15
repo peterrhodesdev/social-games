@@ -2,9 +2,10 @@ import { Logger } from "shared";
 import { emitGameList } from "./user-socket.js";
 import {
   createRoom,
-  deletePlayerFromGames,
+  deletePlayerFromGame,
   generateGameData,
   getGamePublicInfo,
+  getPlayerAndGameByGameSocket,
   joinRoom,
 } from "../services/game-service.js";
 import {
@@ -29,10 +30,12 @@ function emitPlayerList(io, gameId) {
 function handleCommonGameMessages(io, socket) {
   socket.on("disconnect", () => {
     Logger.info(`math-grid socket with id ${socket.id} disconnected`);
-    const gameId = deletePlayerFromGames(socket.id);
-    if (gameId) {
+    const [playerId, gameId] = getPlayerAndGameByGameSocket(socket.id);
+    if (playerId && gameId) {
+      deletePlayerFromGame(playerId, gameId);
       emitGameList();
       emitPlayerList(io, gameId);
+      socket.broadcast.to(gameId).emit("player-left-game", playerId);
     }
   });
 
@@ -91,6 +94,43 @@ function handleCommonGameMessages(io, socket) {
       .to(gameId)
       .emit("chat-message-receive", player.name, message);
   });
+
+  /* Video chat */
+
+  // Player ready for call
+  socket.on("ready-for-call", (gameId, playerId) => {
+    Logger.info(`player ${playerId} in game ${gameId} ready for call`);
+    socket.broadcast.to(gameId).emit("player-ready-for-call", playerId);
+  });
+
+  // Player can't be called
+  socket.on("cant-call", (gameId, playerId) => {
+    Logger.info(`player ${playerId} in game ${gameId} can't be called`);
+    socket.broadcast.to(gameId).emit("player-cant-be-called", playerId);
+  });
+
+  // Call player
+  socket.on("call-player", (fromPlayerId, toPlayerId, signalData) => {
+    Logger.info(`call from ${fromPlayerId} to ${toPlayerId}`);
+    const toPlayer = getPlayer(toPlayerId);
+    io.to(toPlayer.gameSocketId).emit(
+      "player-calling",
+      fromPlayerId,
+      signalData
+    );
+  });
+
+  // Answer player call
+  socket.on("answer-player-call", (toPlayerId, signal) => {
+    Logger.info(`answering player call: ${toPlayerId}`);
+    const toPlayer = getPlayer(toPlayerId);
+    io.to(toPlayer.gameSocketId).emit("call-accepted", signal);
+  });
+
+  /* socket.on("answerCall", (data) => {
+    console.log("answerCall");
+    io.to(data.to).emit("callAccepted", data.signal);
+  }); */
 }
 
 export { handleCommonGameMessages };

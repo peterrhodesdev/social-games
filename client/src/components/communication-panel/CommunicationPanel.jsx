@@ -3,6 +3,7 @@ import { usePlayer } from "../../contexts/UserContext";
 import { TextSubmit } from "../partials/TextSubmit";
 import { ChatMessages } from "./ChatMessages";
 import { PlayersTable } from "./PlayersTable";
+import { VideoChat } from "./VideoChat";
 
 function CommunicationPanel({ creator, players, socket, gameId }) {
   const { player } = usePlayer();
@@ -38,6 +39,10 @@ function CommunicationPanel({ creator, players, socket, gameId }) {
       <div>
         <h3 className="mt-2">Players: {players.length}</h3>
         <PlayersTable creator={creator} players={players} />
+      </div>
+      <div>
+        <h3>Video</h3>
+        <VideoChat socket={socket} gameId={gameId} players={players} />
       </div>
       <div>
         <h3>Chat</h3>

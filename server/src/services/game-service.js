@@ -233,12 +233,7 @@ function joinRoom(gameId, playerId) {
   updateGame(gameId, { playerIds: [...game.playerIds, playerId] });
 }
 
-/**
- * Removes a player from the game they are involved with
- * @param {string} gameSocketId socket ID player used for the game
- * @returns game ID that player was involved with, null if none
- */
-function deletePlayerFromGames(gameSocketId) {
+function getPlayerAndGameByGameSocket(gameSocketId) {
   let playerId = null;
   const game = games.find((g) =>
     g.playerIds.some((pId) => {
@@ -251,26 +246,31 @@ function deletePlayerFromGames(gameSocketId) {
     })
   );
 
-  if (game && playerId) {
-    if (
-      [GameStatus.CREATED, GameStatus.OPEN].includes(game.status) &&
-      game.creatorId === playerId
-    ) {
-      Logger.debug(`creator ${playerId} left game ${game.id}`);
-      updateGame(game.id, { status: GameStatus.DELETED });
-      game.playerIds.forEach((pId) => playerLeftGame(pId));
-    } else {
-      Logger.debug(`player ${playerId} left game ${game.id}`);
-      updateGame(game.id, {
-        playerIds: game.playerIds.filter((pId) => pId !== playerId),
-      });
-      playerLeftGame(playerId);
-    }
-    return game.id;
-  }
+  return [playerId, game ? game.id : null];
+}
 
-  Logger.debug("player wasn't involved in any games");
-  return null;
+/**
+ * Removes a player from the game they are involved with
+ * @param {string} gameSocketId socket ID player used for the game
+ * @returns game ID that player was involved with, null if none
+ */
+function deletePlayerFromGame(playerId, gameId) {
+  const game = getGame(gameId);
+
+  if (
+    [GameStatus.CREATED, GameStatus.OPEN].includes(game.status) &&
+    game.creatorId === playerId
+  ) {
+    Logger.debug(`creator ${playerId} left game ${game.id}`);
+    updateGame(game.id, { status: GameStatus.DELETED });
+    game.playerIds.forEach((pId) => playerLeftGame(pId));
+  } else {
+    Logger.debug(`player ${playerId} left game ${game.id}`);
+    updateGame(game.id, {
+      playerIds: game.playerIds.filter((pId) => pId !== playerId),
+    });
+    playerLeftGame(playerId);
+  }
 }
 
 /**
@@ -326,13 +326,14 @@ export {
   createRoom,
   createNewGame,
   deleteOpenGamesByPlayer,
-  deletePlayerFromGames,
+  deletePlayerFromGame,
   gameCompleted,
   generateGameData,
   getAnswer,
   getGame,
   getGamePublicInfo,
   getGames,
+  getPlayerAndGameByGameSocket,
   joinGameRequest,
   joinRoom,
   populateNineLetterWordsData,
