@@ -12,17 +12,28 @@ function User() {
   const [nameChangeResult, setNameChangeResult] = useState(null);
 
   useEffect(() => {
-    userSocket.on("player-name-change-success", (changedPlayerName) => {
+    if (!userSocket || !player) {
+      return () => {};
+    }
+
+    const playerNameChangeSuccess = (changedPlayerName) => {
       Logger.info(`player name change success: ${changedPlayerName}`);
       setNameChangeResult({ isSuccess: true });
       updatePlayerName(changedPlayerName);
-    });
+    };
+    userSocket.on("player-name-change-success", playerNameChangeSuccess);
 
-    userSocket.on("player-name-change-fail", () => {
+    const playerNameChangeFail = () => {
       Logger.info(`player name change fail`);
       setNameChangeResult({ isSuccess: false, message: "Name already in use" });
-    });
-  }, []);
+    };
+    userSocket.on("player-name-change-fail", playerNameChangeFail);
+
+    return () => {
+      userSocket.off("player-name-change-success", playerNameChangeSuccess);
+      userSocket.off("player-name-change-fail", playerNameChangeFail);
+    };
+  }, [userSocket, player]);
 
   function isNameValid() {
     if (

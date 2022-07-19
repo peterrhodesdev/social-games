@@ -30,39 +30,52 @@ function Lobby() {
   useEffect(() => {
     setIsLoading(true);
     if (!userSocket || !player) {
-      return;
+      return () => {};
     }
 
-    userSocket.on("game-list", (gameList) => {
+    const gameList = (newGames) => {
       setIsLoading(false);
-      setGames(gameList);
-      Logger.info("received game list", gameList);
-    });
+      setGames(newGames);
+      Logger.info("received game list", newGames);
+    };
+    userSocket.on("game-list", gameList);
 
-    userSocket.on("create-game-success", (gameId) => {
+    const createGameSuccess = (gameId) => {
       Logger.info(`game created ${gameId}`);
       navigateToGameRoom(gameId, true);
-    });
+    };
+    userSocket.on("create-game-success", createGameSuccess);
 
-    userSocket.on("create-game-fail", () => {
+    const createGameFail = () => {
       Logger.error("failed to create game");
       gameNameRef.current = null;
-    });
+    };
+    userSocket.on("create-game-fail", createGameFail);
 
-    userSocket.on("join-game-request-success", () => {
+    const joinGameRequestSuccess = () => {
       Logger.info("request to join game success");
       setJoinErrorGameId(null);
       navigateToGameRoom(joinGameIdRef.current, false);
-    });
+    };
+    userSocket.on("join-game-request-success", joinGameRequestSuccess);
 
-    userSocket.on("join-game-request-fail", () => {
+    const joinGameRequestFail = () => {
       Logger.warn(`request to join game fail`);
       setJoinErrorGameId(joinGameIdRef.current);
       joinGameIdRef.current = null;
       gameNameRef.current = null;
-    });
+    };
+    userSocket.on("join-game-request-fail", joinGameRequestFail);
 
     userSocket.emit("get-game-list");
+
+    return () => {
+      userSocket.off("game-list", gameList);
+      userSocket.off("create-game-success", createGameSuccess);
+      userSocket.off("create-game-fail", createGameFail);
+      userSocket.off("join-game-request-success", joinGameRequestSuccess);
+      userSocket.off("join-game-request-fail", joinGameRequestFail);
+    };
   }, [userSocket, player]);
 
   const handleCreateGameClick = (gameName, password) => {
