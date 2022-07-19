@@ -7,7 +7,7 @@ import { NotFound } from "./NotFound";
 import { Game } from "./games/Game";
 import { UserProvider } from "../contexts/UserContext";
 import { User } from "./User";
-import { Guide } from "./Guide";
+import { Guide } from "./guide/Guide";
 
 function App() {
   return (

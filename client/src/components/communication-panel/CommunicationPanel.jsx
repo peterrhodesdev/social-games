@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { usePlayer } from "../../contexts/UserContext";
+import { Tabs } from "../partials/Tabs";
 import { TextSubmit } from "../partials/TextSubmit";
 import { ChatMessages } from "./ChatMessages";
 import { PlayersTable } from "./PlayersTable";
@@ -34,18 +35,16 @@ function CommunicationPanel({ creator, players, socket, gameId }) {
 
   const handleChange = (e) => setChatMessage(e.target.value);
 
-  return (
-    <>
-      <div>
-        <h3 className="mt-2">Players: {players.length}</h3>
-        <PlayersTable creator={creator} players={players} />
-      </div>
-      <div>
-        <h3>Video</h3>
-        <VideoChat socket={socket} gameId={gameId} players={players} />
-      </div>
-      <div>
-        <h3>Chat</h3>
+  const tabs = [
+    {
+      name: "video",
+      displayName: "Video",
+      content: <VideoChat socket={socket} gameId={gameId} players={players} />,
+    },
+    {
+      name: "chat",
+      displayName: "Chat",
+      content: (
         <div className="select-none">
           <ChatMessages chatMessages={chatMessages} />
           <TextSubmit
@@ -57,7 +56,17 @@ function CommunicationPanel({ creator, players, socket, gameId }) {
             isDisabled={!players || players.length <= 1}
           />
         </div>
+      ),
+    },
+  ];
+
+  return (
+    <>
+      <div>
+        <h3 className="mt-2">Players: {players.length}</h3>
+        <PlayersTable creator={creator} players={players} />
       </div>
+      <Tabs tabs={tabs} />
     </>
   );
 }

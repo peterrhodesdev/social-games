@@ -7,6 +7,9 @@ import { CommunicationPanel } from "../communication-panel/CommunicationPanel";
 import { usePlayer } from "../../contexts/UserContext";
 import { Spinner } from "../partials/Spinner";
 import { getGameByName } from "../../GameList";
+import { Accordion } from "../partials/Accordion";
+import { Rules as GuideRules } from "../guide/Rules";
+import { Controls as GuideControls } from "../guide/Controls";
 
 const GameStage = Object.freeze({
   CONNECTING: "CONNECTING",
@@ -181,7 +184,20 @@ function Game() {
     <>
       <h1>{game.displayName}</h1>
       <div className="flex flex-row">
-        <div className="w-1/2 min-w-[320px] mx-1">{gamePanel}</div>
+        <div className="w-1/2 min-w-[320px] mx-1">
+          <div className="mb-4">{gamePanel}</div>
+          <Accordion
+            title="Instructions"
+            content={
+              <>
+                <h3>Rules</h3>
+                <GuideRules game={game} />
+                <h3>Controls</h3>
+                <GuideControls game={game} />
+              </>
+            }
+          />
+        </div>
         <div className="sticky top-2 w-1/2 min-w-[320px] h-fit px-2 py-2 rounded-sm bg-gray-50 border border-gray-100">
           {socketRef.current ? (
             <CommunicationPanel
