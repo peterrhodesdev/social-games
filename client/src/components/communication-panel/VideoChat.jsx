@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Logger } from "shared";
-import Peer from "simple-peer";
 import { usePlayer } from "../../contexts/UserContext";
+import { createPeer, getStream } from "../../utils/video-utils";
 import { PlayerVideo } from "./PlayerVideo";
 
 function VideoChat({ socket, gameId, players }) {
@@ -14,10 +14,7 @@ function VideoChat({ socket, gameId, players }) {
   useEffect(() => {
     const getVideoStream = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
+        const stream = await getStream();
         setMyStream(stream);
         myVideoRef.current.srcObject = stream;
         socket.emit("ready-for-call", gameId, myPlayer.id);
@@ -53,11 +50,7 @@ function VideoChat({ socket, gameId, players }) {
       return;
     }
 
-    const peer = new Peer({
-      initiator: true,
-      trickle: false,
-      stream: myStream,
-    });
+    const peer = createPeer(myStream, true);
     addPlayerVideo(playerId, peer);
 
     peer.on("signal", (data) => {
@@ -81,11 +74,7 @@ function VideoChat({ socket, gameId, players }) {
 
   const answerCall = (fromPlayerId, callerSignal) => {
     Logger.info(`answer call from player ${fromPlayerId}`);
-    const peer = new Peer({
-      initiator: false,
-      trickle: false,
-      stream: myStream,
-    });
+    const peer = createPeer(myStream, false);
     addPlayerVideo(fromPlayerId, peer);
 
     peer.on("signal", (data) => {
