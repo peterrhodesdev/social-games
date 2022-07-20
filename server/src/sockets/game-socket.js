@@ -126,11 +126,6 @@ function handleCommonGameMessages(io, socket) {
     const toPlayer = getPlayer(toPlayerId);
     io.to(toPlayer.gameSocketId).emit("call-accepted", signal);
   });
-
-  /* socket.on("answerCall", (data) => {
-    console.log("answerCall");
-    io.to(data.to).emit("callAccepted", data.signal);
-  }); */
 }
 
 export { handleCommonGameMessages };

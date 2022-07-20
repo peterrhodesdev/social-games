@@ -34,7 +34,8 @@ function CreateGame({ createGameClickHandler, canCreate }) {
         <Textbox
           value={password}
           onChangeHandler={(e) => setPassword(e.target.value)}
-          placeholder="set password..."
+          placeholder="set password or leave blank..."
+          type="password"
         />
       </div>
       <Button

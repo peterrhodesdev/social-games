@@ -35,13 +35,16 @@ function GameList({
           <td>{getGameByName(game.name).displayName}</td>
           <td>{game.players ? game.players.length : 0}</td>
           <td className="flex flex-col items-end">
-            <Textbox
-              value={passwords[game.id]}
-              onChangeHandler={(e) =>
-                setPasswords({ ...passwords, [game.id]: e.target.value })
-              }
-              placeholder="enter password..."
-            />
+            {game.hasPassword && (
+              <Textbox
+                value={passwords[game.id]}
+                onChangeHandler={(e) =>
+                  setPasswords({ ...passwords, [game.id]: e.target.value })
+                }
+                placeholder="enter password..."
+                type="password"
+              />
+            )}
           </td>
           <td>
             <div>
@@ -61,7 +64,7 @@ function GameList({
               />
             </div>
             {joinErrorGameId === game.id ? (
-              <div className="grow text-center text-red-500">Error</div>
+              <div className="grow text-center text-red-500">Try again</div>
             ) : null}
           </td>
         </tr>

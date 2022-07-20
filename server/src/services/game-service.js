@@ -94,6 +94,7 @@ function getGamePublicInfo(gameId) {
     name: game.name,
     status: game.status,
     players: game.playerIds.map((pId) => getPlayerPublicInfo(pId)),
+    hasPassword: !!game.password,
   };
 }
 
