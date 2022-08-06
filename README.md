@@ -1,6 +1,8 @@
 
 # Social Games
 
+[![tests](https://github.com/peterrhodesdev/social-games/workflows/tests/badge.svg)](https://github.com/peterrhodesdev/social-games/actions?query=workflow%3Atests)
+
 Multiplayer online games with video and text chat. This project was built with React.js, Tailwind CSS, Node.js, Express.js, Socket.IO (WebSocket), and simple-peer (WebRTC).
 
 Check out the project deployed on Heroku here:
